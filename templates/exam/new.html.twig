@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}🆕 Nouvel Examen | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="bi bi-plus-circle me-2"></i>Créer un nouvel examen
+            </h4>
+            <a href="{{ path('app_exam_index') }}" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="card-body p-4">
+            {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+            <!-- Champ : Titre -->
+            <div class="mb-3">
+                {{ form_label(form.title, 'Titre de l’examen', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Ex : Mathématiques - Chapitre 3'}}) }}
+                {{ form_errors(form.title) }}
+            </div>
+
+            <!-- Champ : Description -->
+            <div class="mb-3">
+                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3, 'placeholder': 'Décrivez le contenu ou les objectifs de cet examen...'}}) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <!-- Ligne : Durée + Dates -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.durationMinutes, 'Durée (minutes)', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                    {{ form_widget(form.durationMinutes, {'attr': {'class': 'form-control', 'min': 1}}) }}
+                    {{ form_errors(form.durationMinutes) }}
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.startAt, 'Date de début', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                    {{ form_widget(form.startAt, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.startAt) }}
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    {{ form_label(form.endAt, 'Date de fin', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                    {{ form_widget(form.endAt, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.endAt) }}
+                </div>
+            </div>
+
+            <!-- Bouton -->
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-check-circle me-1"></i> Créer l’examen
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <p class="text-muted mb-0">💡 Après création, vous pourrez ajouter des questions et des choix à cet examen.</p>
+    </div>
+</div>
+{% endblock %}

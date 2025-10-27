@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des choix | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h4 text-primary mb-0">🎯 Liste des choix</h1>
+        <a href="{{ path('app_choice_new') }}" class="btn btn-success btn-sm">
+            <i class="bi bi-plus-circle"></i> Nouveau choix
+        </a>
+    </div>
+
+    {% if choices is not empty %}
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Texte</th>
+                            <th scope="col">Correct ?</th>
+                            <th scope="col">Question associée</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for choice in choices %}
+                        <tr>
+                            <td class="fw-bold">{{ loop.index }}</td>
+                            <td>{{ choice.text|length > 60 ? choice.text|slice(0,60) ~ '…' : choice.text }}</td>
+                            <td>
+                                {% if choice.isCorrect %}
+                                    <span class="badge bg-success">Oui</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Non</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ choice.question ? choice.question.text|u.truncate(50, '…') : '—' }}</td>
+                            <td class="text-center">
+                                <a href="{{ path('app_choice_show', {'id': choice.id}) }}" class="btn btn-sm btn-outline-info" title="Voir">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ path('app_choice_edit', {'id': choice.id}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                {{ include('choice/_delete_form.html.twig') }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center shadow-sm">
+            Aucun choix enregistré pour le moment.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

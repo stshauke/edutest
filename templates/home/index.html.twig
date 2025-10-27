@@ -1,0 +1,237 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}🏫 EduTest — Plateforme d'évaluation moderne{% endblock %}
+
+{% block body %}
+<!-- 🧭 NAVBAR FIXE -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-3">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-white fs-4" href="{{ path('home') }}">
+      🎓 <span class="text-warning">EduTest</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-lg-center">
+        <li class="nav-item"><a class="nav-link text-white" href="#features">Fonctionnalités</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#stats">Statistiques</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#testimonials">Témoignages</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#cta">Commencer</a></li>
+
+        {% if app.user %}
+          <li class="nav-item ms-3">
+            {% if 'ROLE_TEACHER' in app.user.roles %}
+              <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                👩‍🏫 Tableau de bord
+              </a>
+            {% elseif 'ROLE_STUDENT' in app.user.roles %}
+              <a href="{{ path('student_exams') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                🎓 Mes examens
+              </a>
+            {% endif %}
+          </li>
+          <li class="nav-item ms-2">
+            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm fw-semibold">🚪 Déconnexion</a>
+          </li>
+        {% else %}
+          <li class="nav-item ms-3">
+            <a href="{{ path('app_login') }}" class="btn btn-light btn-sm fw-semibold text-primary">🔐 Connexion</a>
+          </li>
+          <li class="nav-item ms-2">
+            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-sm fw-semibold">📝 Inscription</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- 🟦 HERO -->
+<section class="hero d-flex align-items-center text-center text-white">
+  <div class="container" data-aos="fade-up">
+    <h1 class="fw-bold display-4 mb-3">Bienvenue sur <span class="text-warning">EduTest</span></h1>
+    <p class="lead mb-4">La plateforme d’évaluation moderne pour apprendre, enseigner et progresser ensemble.</p>
+
+    {% if not app.user %}
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="{{ path('app_login') }}" class="btn btn-lg btn-light text-primary fw-semibold px-4 py-2 shadow-sm">
+          🔐 Se connecter
+        </a>
+        <a href="{{ path('app_register') }}" class="btn btn-lg btn-outline-light fw-semibold px-4 py-2">
+          📝 S'inscrire
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- 💡 FEATURES -->
+<section id="features" class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-primary" data-aos="fade-up">🚀 Pourquoi choisir EduTest ?</h2>
+      <p class="text-muted" data-aos="fade-up" data-aos-delay="100">
+        Une solution intuitive, rapide et complète pour simplifier vos examens.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      {% set features = [
+        {'icon':'💻','title':'Interface intuitive','text':'Une expérience fluide et agréable pour enseignants et étudiants.'},
+        {'icon':'⚡','title':'Correction automatique','text':'Les résultats sont calculés instantanément grâce à un système intelligent.'},
+        {'icon':'📊','title':'Suivi des performances','text':'Des statistiques claires pour suivre la progression des élèves.'}
+      ] %}
+      {% for f in features %}
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+          <div class="card h-100 border-0 shadow-lg p-4 text-center rounded-4">
+            <div class="icon mb-3" style="font-size:3rem;">{{ f.icon }}</div>
+            <h5 class="fw-bold">{{ f.title }}</h5>
+            <p class="text-muted">{{ f.text }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 📈 STATS -->
+<section id="stats" class="stats-section text-white text-center py-5">
+  <div class="container" data-aos="zoom-in">
+    <div class="row g-4">
+      {% set stats = [
+        {'count':350, 'label':'Étudiants actifs'},
+        {'count':42, 'label':'Examens créés'},
+        {'count':1250, 'label':'Copies corrigées'},
+        {'count':98, 'label':'% de satisfaction'}
+      ] %}
+      {% for s in stats %}
+        <div class="col-md-3">
+          <h2 class="fw-bold counter" data-count="{{ s.count }}">0</h2>
+          <p>{{ s.label }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 💬 TÉMOIGNAGES -->
+<section id="testimonials" class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-primary" data-aos="fade-up">💬 Témoignages</h2>
+      <p class="text-muted" data-aos="fade-up" data-aos-delay="100">
+        Ils utilisent EduTest au quotidien et partagent leur expérience.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      {% set testimonials = [
+        {'name':'Marie Dupont','role':'Professeure de Mathématiques','text':'EduTest a transformé ma manière d’évaluer mes élèves. Plus rapide, plus clair, plus juste !','img':'https://randomuser.me/api/portraits/women/44.jpg'},
+        {'name':'Lucas Bernard','role':'Étudiant en Sciences','text':'Grâce à EduTest, je peux suivre mes résultats instantanément et voir où je dois progresser.','img':'https://randomuser.me/api/portraits/men/46.jpg'},
+        {'name':'Paul Moreau','role':'Enseignant en Physique','text':'Simple, élégant et efficace. Je gagne un temps précieux pour mes classes.','img':'https://randomuser.me/api/portraits/men/33.jpg'}
+      ] %}
+      {% for t in testimonials %}
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+          <div class="card shadow border-0 rounded-4 p-4 h-100">
+            <p class="fst-italic text-muted">“{{ t.text }}”</p>
+            <div class="d-flex align-items-center mt-3">
+              <img src="{{ t.img }}" class="rounded-circle me-3" width="50">
+              <div>
+                <strong>{{ t.name }}</strong><br>
+                <small class="text-muted">{{ t.role }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ✅ CTA -->
+<section id="cta" class="cta text-center text-white py-5">
+  <div class="container" data-aos="zoom-in">
+    {% if app.user %}
+      {% if 'ROLE_TEACHER' in app.user.roles %}
+        <h2 class="fw-bold mb-3">Bienvenue, {{ app.user.fullName|default('Enseignant') }} 👋</h2>
+        <p class="mb-4">Accédez à votre tableau de bord pour gérer vos examens.</p>
+        <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
+          📘 Mon tableau de bord
+        </a>
+      {% elseif 'ROLE_STUDENT' in app.user.roles %}
+        <h2 class="fw-bold mb-3">Prêt à relever un défi ? 💪</h2>
+        <p class="mb-4">Découvrez vos examens disponibles et mesurez vos progrès.</p>
+        <a href="{{ path('student_exams') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
+          🧠 Commencer un examen
+        </a>
+      {% endif %}
+    {% else %}
+      <h2 class="fw-bold mb-3">Rejoignez EduTest dès aujourd’hui !</h2>
+      <p class="mb-4">Profitez d’une expérience d’évaluation fluide et intuitive.</p>
+      <a href="{{ path('app_register') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
+        ✨ Créer un compte gratuit
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+<!-- 🌐 FOOTER FIXE -->
+
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+body {
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.hero {
+  background: linear-gradient(to right, rgba(0, 51, 102, 0.85), rgba(0, 102, 204, 0.85)),
+              url('https://images.unsplash.com/photo-1600185365524-6cc57d1e8b1d?auto=format&fit=crop&w=1500&q=80') center/cover;
+  min-height: 90vh;
+  color: #fff;
+  margin-top: 75px;
+}
+.stats-section {
+  background: linear-gradient(135deg, #0d6efd, #198754);
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  transition: all 0.3s ease-in-out;
+}
+.cta {
+  background: linear-gradient(to right, #0d6efd, #20c997);
+}
+.footer {
+  background-color: #0d6efd;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({ duration: 800, once: true });
+document.querySelectorAll('.counter').forEach(counter => {
+  const target = +counter.dataset.count;
+  let count = 0;
+  const step = target / 80;
+  const update = () => {
+    count += step;
+    counter.textContent = Math.floor(count);
+    if (count < target) requestAnimationFrame(update);
+    else counter.textContent = target;
+  };
+  update();
+});
+</script>
+{% endblock %}

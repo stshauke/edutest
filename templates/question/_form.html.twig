@@ -1,0 +1,31 @@
+{{ form_start(form, { attr: { class: 'card p-4 shadow-sm' } }) }}
+    <div class="mb-3">
+        {{ form_label(form.title, null, { label_attr: { class: 'form-label fw-semibold' } }) }}
+        {{ form_widget(form.title) }}
+        {{ form_errors(form.title) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.type) }}
+        {{ form_widget(form.type) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.points) }}
+        {{ form_widget(form.points) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.exam) }}
+        {{ form_widget(form.exam) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.content) }}
+        {{ form_widget(form.content) }}
+    </div>
+
+    <button class="btn btn-primary mt-3">
+        💾 Enregistrer
+    </button>
+{{ form_end(form) }}

@@ -1,0 +1,80 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-3">
+  <div class="container">
+    {# 🏠 LOGO / MARQUE #}
+    <a class="navbar-brand fw-bold text-white fs-4" href="{{ path('home') }}">
+      🎓 <span class="text-warning">EduTest</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-lg-center">
+
+        {# ========================== #
+           🔹 Liens publics (home page)
+        # ========================== #}
+        <li class="nav-item"><a class="nav-link text-white" href="{{ path('home') }}">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#features">Fonctionnalités</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#stats">Statistiques</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#testimonials">Témoignages</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#cta">Commencer</a></li>
+
+        {# ========================== #
+           👤 Gestion selon le rôle
+        # ========================== #}
+        {% if app.user %}
+          {# === ADMIN === #}
+          {% if 'ROLE_ADMIN' in app.user.roles %}
+            <li class="nav-item ms-3">
+              <a href="{{ path('admin_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                ⚙️ Espace Admin
+              </a>
+            </li>
+          {% endif %}
+
+          {# === ENSEIGNANT === #}
+          {% if 'ROLE_TEACHER' in app.user.roles %}
+            <li class="nav-item ms-3">
+              <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                👩‍🏫 Tableau de bord
+              </a>
+            </li>
+          {% endif %}
+
+          {# === ÉTUDIANT === #}
+          {% if 'ROLE_STUDENT' in app.user.roles %}
+            <li class="nav-item ms-3">
+              <a href="{{ path('student_exams') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                🎓 Mes examens
+              </a>
+            </li>
+          {% endif %}
+
+          {# === DÉCONNEXION === #}
+          <li class="nav-item ms-2">
+            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm fw-semibold">
+              🚪 Déconnexion
+            </a>
+          </li>
+
+        {% else %}
+          {# ========================== #
+             🔓 Utilisateur non connecté
+          # ========================== #}
+          <li class="nav-item ms-3">
+            <a href="{{ path('app_login') }}" class="btn btn-light btn-sm fw-semibold text-primary">
+              🔐 Connexion
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-sm fw-semibold">
+              📝 Inscription
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

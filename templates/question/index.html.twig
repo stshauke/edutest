@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des questions{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="mb-4">📚 Liste des questions</h1>
+
+    <a href="{{ path('app_question_new') }}" class="btn btn-success mb-3">➕ Nouvelle question</a>
+
+    <table class="table table-hover shadow-sm align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Intitulé</th>
+                <th>Type</th>
+                <th>Points</th>
+                <th>Examen</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for question in questions %}
+            <tr>
+                <td>{{ question.text }}</td>
+                <td>{{ question.type }}</td>
+                <td>{{ question.points }}</td>
+                <td>{{ question.exam ? question.exam.title : '-' }}</td>
+                <td>
+                    <a href="{{ path('app_question_show', {'id': question.id}) }}" class="btn btn-sm btn-outline-info">👁️ Voir</a>
+                    <a href="{{ path('app_question_edit', {'id': question.id}) }}" class="btn btn-sm btn-outline-warning">✏️ Modifier</a>
+                    {{ include('question/_delete_form.html.twig', { question: question }) }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">Aucune question trouvée.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

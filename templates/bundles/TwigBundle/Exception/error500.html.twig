@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur interne du serveur (500) | EduTest{% endblock %}
+
+{% block body %}
+<div class="container text-center py-5">
+    <h1 class="display-4 text-danger mb-3">💥 Erreur interne du serveur</h1>
+    <p class="lead text-muted mb-4">
+        Une erreur inattendue est survenue. Nos équipes techniques ont été prévenues (enfin... presque 😅).
+    </p>
+
+    <a href="{{ path('home') }}" class="btn btn-outline-primary btn-lg">
+        🏠 Retour à l’accueil
+    </a>
+
+    <div class="mt-5">
+        <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="500" width="150">
+    </div>
+</div>
+{% endblock %}

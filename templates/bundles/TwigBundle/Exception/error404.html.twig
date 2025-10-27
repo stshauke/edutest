@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page non trouvée (404) | EduTest{% endblock %}
+
+{% block body %}
+<div class="container text-center py-5">
+    <h1 class="display-4 text-danger mb-4">⚠️ Oups ! Page introuvable</h1>
+    <p class="lead mb-4 text-muted">
+        La page que vous cherchez n’existe pas ou a été déplacée.
+    </p>
+
+    <a href="{{ path('home') }}" class="btn btn-primary btn-lg">
+        ⬅️ Retour à l’accueil
+    </a>
+
+    {% if app.user %}
+        {% if 'ROLE_TEACHER' in app.user.roles %}
+            <a href="{{ path('teacher_dashboard') }}" class="btn btn-outline-secondary btn-lg mx-2">
+                🎓 Tableau enseignant
+            </a>
+        {% elseif 'ROLE_STUDENT' in app.user.roles %}
+            <a href="{{ path('student_exams') }}" class="btn btn-outline-secondary btn-lg mx-2">
+                🧭 Mes examens
+            </a>
+        {% endif %}
+    {% endif %}
+
+    <div class="mt-5">
+        <img src="https://cdn-icons-png.flaticon.com/512/748/748113.png" alt="404" width="150">
+    </div>
+</div>
+{% endblock %}

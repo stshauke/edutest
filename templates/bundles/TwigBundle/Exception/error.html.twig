@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur | EduTest{% endblock %}
+
+{% block body %}
+<div class="container text-center py-5">
+    <h1 class="display-5 text-warning mb-3">⚠️ Une erreur est survenue</h1>
+    <p class="lead text-muted mb-4">
+        Le serveur a rencontré un problème (erreur {{ status_code }}).
+    </p>
+
+    <a href="{{ path('home') }}" class="btn btn-primary btn-lg">⬅️ Retour à l’accueil</a>
+</div>
+{% endblock %}

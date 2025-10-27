@@ -1,0 +1,46 @@
+<div id="countdown" data-deadline="{{ deadline|date('U') }}"></div>
+<form id="exam-form" method="post" action="{{ path('student_exam_submit', {id: assignment.id}) }}">
+  {% for q in exam.questions %}
+    <div class="question">
+      <p><strong>Q{{ loop.index }}.</strong> {{ q.text }}</p>
+      {% if q.type == 'QCM' %}
+        {% for c in q.choices %}
+          <label>
+            <input type="checkbox" name="q{{ q.id }}[]" value="{{ c.id }}">
+            {{ c.label }}
+          </label><br>
+        {% endfor %}
+      {% else %}
+        <textarea name="q{{ q.id }}_text" rows="4"></textarea>
+      {% endif %}
+    </div>
+  {% endfor %}
+  <button type="submit">Soumettre</button>
+</form>
+
+<script>
+const el = document.getElementById('countdown');
+const deadline = parseInt(el.dataset.deadline, 10) * 1000;
+const form = document.getElementById('exam-form');
+
+function tick(){
+  const now = Date.now();
+  const diff = Math.max(0, Math.floor((deadline - now)/1000));
+  if(diff <= 0){
+    form.submit(); // auto-submit quand le temps est écoulé
+    return;
+  }
+  const m = String(Math.floor(diff/60)).padStart(2,'0');
+  const s = String(diff%60).padStart(2,'0');
+  el.textContent = `Temps restant : ${m}:${s}`;
+  setTimeout(tick, 1000);
+}
+tick();
+
+// Anti-triche simple : alerte sur perte de focus (ne bloque pas, juste un avertissement)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    console.warn('Attention: l’onglet a perdu le focus.');
+  }
+});
+</script>

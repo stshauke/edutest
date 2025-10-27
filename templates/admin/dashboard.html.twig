@@ -1,0 +1,276 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}⚙️ Tableau de bord administrateur | EduTest{% endblock %}
+
+{% block body %}
+<div class="d-flex" style="min-height: 100vh;">
+
+  {# ========================== 🧭 SIDEBAR ========================== #}
+  <nav id="sidebar" class="bg-dark text-white p-3 shadow-sm" style="width: 250px;">
+    <h4 class="text-center mb-4">🎓 EduTest Admin</h4>
+    <ul class="nav flex-column">
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white {% if app.request.get('_route') == 'admin_dashboard' %}active bg-primary rounded{% endif %}"
+           href="{{ path('admin_dashboard') }}">
+          <i class="bi bi-speedometer2 me-2"></i> Tableau de bord
+        </a>
+      </li>
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white" href="#users-section">
+          <i class="bi bi-people-fill me-2"></i> Gestion des utilisateurs
+        </a>
+      </li>
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white" href="#exams-section">
+          <i class="bi bi-journal-text me-2"></i> Gestion des examens
+        </a>
+      </li>
+      <li class="nav-item mt-4">
+        <a class="nav-link text-danger fw-semibold" href="{{ path('app_logout') }}">
+          <i class="bi bi-box-arrow-right me-2"></i> Déconnexion
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  {# ========================== 📊 MAIN CONTENT ========================== #}
+  <div class="flex-grow-1 p-4 bg-light">
+    <h1 class="text-center fw-bold mb-5 text-primary">⚙️ Tableau de bord administrateur</h1>
+
+    {# ========================== 🧮 STATISTIQUES ========================== #}
+    <div class="row g-4 mb-5 text-center">
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow border-0 p-4 h-100">
+          <div class="fs-1 text-primary">👩‍🏫</div>
+          <h4 class="fw-bold mb-0">{{ totalTeachers|default(0) }}</h4>
+          <p class="text-muted mb-0">Enseignants</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow border-0 p-4 h-100">
+          <div class="fs-1 text-success">🎓</div>
+          <h4 class="fw-bold mb-0">{{ totalStudents|default(0) }}</h4>
+          <p class="text-muted mb-0">Étudiants</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow border-0 p-4 h-100">
+          <div class="fs-1 text-info">🧾</div>
+          <h4 class="fw-bold mb-0">{{ totalExams|default(0) }}</h4>
+          <p class="text-muted mb-0">Examens créés</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow border-0 p-4 h-100">
+          <div class="fs-1 text-warning">📊</div>
+          <h4 class="fw-bold mb-0">{{ submissionRate|default(0) }}%</h4>
+          <p class="text-muted mb-0">Taux de soumission</p>
+        </div>
+      </div>
+    </div>
+
+    {# ========================== 📈 GRAPHIQUE ========================== #}
+    <div class="card shadow border-0 mb-5">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="bi bi-bar-chart-fill me-2"></i> Vue d’ensemble</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="adminStatsChart" height="120"></canvas>
+      </div>
+    </div>
+
+    {# ========================== 👤 AJOUT UTILISATEUR ========================== #}
+    <section id="users-section" class="mb-5">
+      <div class="card shadow border-0 mb-5">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i> Ajouter un utilisateur</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Nom complet</label>
+              <input type="text" name="fullName" class="form-control" placeholder="Ex: Jean Dupont" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" placeholder="exemple@domain.fr" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Mot de passe</label>
+              <input type="password" name="password" class="form-control" placeholder="********" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Rôle</label>
+              <select name="role" class="form-select" required>
+                <option value="ROLE_TEACHER">👩‍🏫 Enseignant</option>
+                <option value="ROLE_STUDENT">🎓 Étudiant</option>
+              </select>
+            </div>
+            <div class="col-md-12 text-end">
+              <button type="submit" class="btn btn-success px-4">
+                <i class="bi bi-check-circle"></i> Créer l’utilisateur
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {# ========================== 👩‍🏫 LISTES UTILISATEURS ========================== #}
+      <div class="row">
+        <div class="col-lg-6 mb-4">
+          <div class="card shadow border-0 h-100">
+            <div class="card-header bg-primary text-white">
+              <i class="bi bi-person-badge-fill me-2"></i> Enseignants
+            </div>
+            <div class="card-body table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr><th>Nom</th><th>Email</th><th>Approuvé</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  {% for teacher in teachers %}
+                    <tr>
+                      <td>{{ teacher.fullName }}</td>
+                      <td>{{ teacher.email }}</td>
+                      <td>
+                        {% if teacher.isApproved %}
+                          <span class="badge bg-success">Oui</span>
+                        {% else %}
+                          <span class="badge bg-warning text-dark">Non</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if not teacher.isApproved %}
+                          <a href="{{ path('admin_approve_user', {id: teacher.id}) }}" class="btn btn-sm btn-success me-2">Approuver</a>
+                        {% else %}
+                          <a href="{{ path('admin_ban_user', {id: teacher.id}) }}" class="btn btn-sm btn-outline-warning me-2">Désactiver</a>
+                        {% endif %}
+                        <a href="{{ path('admin_delete_user', {id: teacher.id}) }}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                      </td>
+                    </tr>
+                  {% else %}
+                    <tr><td colspan="4" class="text-center text-muted">Aucun enseignant trouvé.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+          <div class="card shadow border-0 h-100">
+            <div class="card-header bg-success text-white">
+              <i class="bi bi-mortarboard-fill me-2"></i> Étudiants
+            </div>
+            <div class="card-body table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr><th>Nom</th><th>Email</th><th>Approuvé</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  {% for student in students %}
+                    <tr>
+                      <td>{{ student.fullName }}</td>
+                      <td>{{ student.email }}</td>
+                      <td>
+                        {% if student.isApproved %}
+                          <span class="badge bg-success">Oui</span>
+                        {% else %}
+                          <span class="badge bg-warning text-dark">Non</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if not student.isApproved %}
+                          <a href="{{ path('admin_approve_user', {id: student.id}) }}" class="btn btn-sm btn-success me-2">Approuver</a>
+                        {% else %}
+                          <a href="{{ path('admin_ban_user', {id: student.id}) }}" class="btn btn-sm btn-outline-warning me-2">Désactiver</a>
+                        {% endif %}
+                        <a href="{{ path('admin_delete_user', {id: student.id}) }}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                      </td>
+                    </tr>
+                  {% else %}
+                    <tr><td colspan="4" class="text-center text-muted">Aucun étudiant trouvé.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# ========================== 📘 GESTION DES EXAMENS ========================== #}
+    <section id="exams-section">
+      <div class="card shadow border-0">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-journal-text me-2"></i> Examens</h5>
+          <a href="{{ path('app_exam_index') }}" class="btn btn-light btn-sm fw-semibold">Voir tous les examens</a>
+        </div>
+        <div class="card-body">
+          {% if exams is defined and exams|length > 0 %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr><th>Titre</th><th>Description</th><th>Durée</th><th class="text-center">Actions</th></tr>
+                </thead>
+                <tbody>
+                  {% for exam in exams %}
+                    <tr>
+                      <td>{{ exam.title }}</td>
+                      <td>{{ exam.description|default('—') }}</td>
+                      <td>{{ exam.durationMinutes }} min</td>
+                      <td class="text-center">
+                        <a href="{{ path('admin_exam_export_pdf', {id: exam.id}) }}" class="btn btn-sm btn-outline-danger me-2">📄 PDF</a>
+                        <a href="{{ path('admin_exam_export_csv', {id: exam.id}) }}" class="btn btn-sm btn-outline-success me-2">📥 CSV</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-center text-muted mb-0">Aucun examen trouvé.</p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+#sidebar { position: sticky; top: 0; height: 100vh; }
+#sidebar .nav-link { font-weight: 500; padding: 8px 12px; }
+#sidebar .nav-link.active { background-color: #0d6efd !important; color: #fff !important; }
+.card { transition: all 0.3s ease-in-out; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.table thead th { background-color: #f8f9fa; }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const ctx = document.getElementById('adminStatsChart');
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Enseignants', 'Étudiants', 'Examens', 'Soumissions'],
+      datasets: [{
+        data: [{{ totalTeachers|default(0) }}, {{ totalStudents|default(0) }}, {{ totalExams|default(0) }}, {{ submissionRate|default(0) }}],
+        backgroundColor: ['#0d6efd','#198754','#ffc107','#dc3545'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+});
+</script>
+{% endblock %}

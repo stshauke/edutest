@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}📋 Affectations d’examens | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h1 class="h4 text-primary mb-0">
+            <i class="bi bi-people-fill me-2"></i> Gestion des affectations d’examens
+        </h1>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ path('teacher_assignment_new') }}" class="btn btn-success btn-sm">
+                <i class="bi bi-plus-circle"></i> Nouvelle affectation
+            </a>
+            <a href="{{ path('app_exam_index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Retour aux examens
+            </a>
+        </div>
+    </div>
+
+    <!-- Liste des affectations -->
+    {% if assignments is not empty %}
+        <div class="table-responsive shadow-sm">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Examen</th>
+                        <th>Étudiant</th>
+                        <th>Status</th>
+                        <th>Date d’affectation</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ assignment.exam.title }}</td>
+                            <td>{{ assignment.student.fullName ?? assignment.student.email }}</td>
+                            <td>
+                                {% set status = assignment.status|upper %}
+                                {% if status == 'ASSIGNED' %}
+                                    <span class="badge bg-info">Affecté</span>
+                                {% elseif status == 'STARTED' %}
+                                    <span class="badge bg-warning text-dark">En cours</span>
+                                {% elseif status == 'SUBMITTED' %}
+                                    <span class="badge bg-success">Soumis</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ assignment.assignedAt ? assignment.assignedAt|date('d/m/Y H:i') : '—' }}</td>
+                            <td class="text-center">
+                                <form method="post" action="{{ path('teacher_assignment_delete', {'id': assignment.id}) }}" onsubmit="return confirm('Confirmer la suppression ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ assignment.id) }}">
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-secondary text-center shadow-sm">
+            Aucune affectation d’examen pour le moment.<br>
+            <a href="{{ path('teacher_assignment_new') }}" class="alert-link">Créer une nouvelle affectation</a>.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

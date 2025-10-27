@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>📄 Résultats de l’examen — {{ exam.title }}</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+            color: #333;
+            margin: 30px;
+        }
+        h1, h2, h3 { color: #2c3e50; }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 22px;
+            text-transform: uppercase;
+        }
+        .exam-info {
+            margin-bottom: 25px;
+            padding: 10px;
+            background: #f9fafb;
+            border-left: 4px solid #0d6efd;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #555;
+            padding: 8px;
+            text-align: center;
+        }
+        th { background: #0d6efd; color: #fff; }
+        tr:nth-child(even) { background-color: #f7f9fc; }
+        tr:hover { background-color: #eef3ff; }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .summary { margin-top: 25px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<h1>Résultats de l’examen : {{ exam.title }}</h1>
+
+<div class="exam-info">
+    <p><strong>Description :</strong> {{ exam.description ?? 'Aucune description' }}</p>
+    <p><strong>Durée :</strong> {{ exam.durationMinutes }} minutes</p>
+    <p><strong>Date de début :</strong> {{ exam.startAt ? exam.startAt|date('d/m/Y H:i') : '-' }}</p>
+    <p><strong>Date de fin :</strong> {{ exam.endAt ? exam.endAt|date('d/m/Y H:i') : '-' }}</p>
+</div>
+
+<h3>🧾 Liste des copies soumises</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>Étudiant</th>
+        <th>Email</th>
+        <th>Note /20</th>
+        <th>Date de soumission</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if assignments is defined and assignments|length > 0 %}
+        {% for a in assignments %}
+            <tr>
+                <td>{{ a.student.fullName }}</td>
+                <td>{{ a.student.email }}</td>
+                <td>{{ a.finalGrade is not null ? a.finalGrade|number_format(2, ',', ' ') : '-' }}</td>
+                <td>{{ a.submittedAt ? a.submittedAt|date('d/m/Y H:i') : '-' }}</td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="4" style="text-align:center; color:#999;">Aucune copie soumise pour cet examen.</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>
+
+{# ====== Statistiques (moyenne / min / max) sans filtres avancés ====== #}
+{% if assignments is defined and assignments|length > 0 %}
+    {# 1) Récupérer les notes non nulles dans un tableau #}
+    {% set notes = [] %}
+    {% for a in assignments %}
+        {% if a.finalGrade is not null %}
+            {% set notes = notes|merge([a.finalGrade]) %}
+        {% endif %}
+    {% endfor %}
+
+    {% set count = notes|length %}
+    {% if count > 0 %}
+        {# 2) Somme #}
+        {% set sum = 0 %}
+        {% for n in notes %}
+            {% set sum = sum + n %}
+        {% endfor %}
+
+        {# 3) Moyenne #}
+        {% set moyenne = sum / count %}
+
+        {# 4) Min/Max (initialisés avec la première valeur) #}
+        {% set minNote = notes[0] %}
+        {% set maxNote = notes[0] %}
+        {% for n in notes %}
+            {% if n < minNote %}{% set minNote = n %}{% endif %}
+            {% if n > maxNote %}{% set maxNote = n %}{% endif %}
+        {% endfor %}
+
+        <div class="summary">
+            <p><strong>📊 Moyenne de la classe :</strong> {{ moyenne|number_format(2, ',', ' ') }}/20</p>
+            <p><strong>🔝 Note la plus élevée :</strong> {{ maxNote|number_format(2, ',', ' ') }}/20</p>
+            <p><strong>🔻 Note la plus basse :</strong> {{ minNote|number_format(2, ',', ' ') }}/20</p>
+        </div>
+    {% endif %}
+{% endif %}
+
+<div class="footer">
+    Rapport généré automatiquement le {{ "now"|date('d/m/Y H:i') }}<br>
+    <strong>EduTest © {{ "now"|date('Y') }}</strong> — Plateforme d’évaluation intelligente
+</div>
+
+</body>
+</html>

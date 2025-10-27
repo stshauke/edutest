@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+{% block title %}📘 Détails de l’examen | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h1 class="h4 text-primary mb-0">
+            <i class="bi bi-journal-text me-2"></i> Détails de l’examen
+        </h1>
+        <div class="d-flex flex-wrap gap-2">
+            {% if is_granted('ROLE_TEACHER') %}
+                <a href="{{ path('teacher_assignment_index') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-people-fill"></i> Gérer les affectations
+                </a>
+                <a href="{{ path('app_question_new', {'exam': exam.id}) }}" class="btn btn-outline-success btn-sm">
+                    <i class="bi bi-plus-circle"></i> Ajouter une question
+                </a>
+            {% endif %}
+            <a href="{{ path('app_exam_edit', {'id': exam.id}) }}" class="btn btn-warning btn-sm">
+                <i class="bi bi-pencil-square"></i> Modifier
+            </a>
+            {{ include('exam/_delete_form.html.twig', { exam: exam }) }}
+            <a href="{{ path('app_exam_index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte des infos -->
+    <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{{ exam.title }}</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Description :</strong> {{ exam.description ?: 'Aucune description disponible.' }}</p>
+            <p><strong>Durée :</strong> {{ exam.durationMinutes }} min</p>
+            <p><strong>Date de début :</strong> {{ exam.startAt ? exam.startAt|date('d/m/Y H:i') : 'Non définie' }}</p>
+            <p><strong>Date de fin :</strong> {{ exam.endAt ? exam.endAt|date('d/m/Y H:i') : 'Non définie' }}</p>
+        </div>
+    </div>
+
+    <!-- Section Questions -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-question-circle me-2"></i> Questions associées
+            </h5>
+            {% if is_granted('ROLE_TEACHER') %}
+                <a href="{{ path('app_question_new', {'exam': exam.id}) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> Ajouter une question
+                </a>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% if exam.questions|length > 0 %}
+                <div class="list-group">
+                    {% for question in exam.questions %}
+                        <div class="list-group-item list-group-item-action mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ loop.index }}. {{ question.text }}</h6>
+                                    {% if question.content %}
+                                        <p class="mb-1 text-muted">{{ question.content }}</p>
+                                    {% endif %}
+                                    <small class="text-muted">
+                                        Type : <strong>{{ question.type }}</strong> |
+                                        Points : <strong>{{ question.points }}</strong>
+                                    </small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <a href="{{ path('app_question_show', {'id': question.id}) }}" class="btn btn-sm btn-outline-info me-1" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_question_edit', {'id': question.id}) }}" class="btn btn-sm btn-outline-warning me-1" title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {{ include('question/_delete_form.html.twig', { question: question }) }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted text-center mt-3">Aucune question ajoutée pour le moment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

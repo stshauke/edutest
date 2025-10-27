@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+{% block title %}Détails de la question | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h1 class="h4 text-primary mb-0">📘 Détails de la question</h1>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <a href="{{ path('app_question_edit', {'id': question.id}) }}" 
+               class="btn btn-warning btn-sm" title="Modifier la question">
+                <i class="bi bi-pencil-square"></i> Modifier
+            </a>
+
+            {{ include('question/_delete_form.html.twig', { question: question }) }}
+
+            {% if question.exam %}
+                <a href="{{ path('app_exam_show', {'id': question.exam.id}) }}" 
+                   class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Retour à l'examen
+                </a>
+            {% else %}
+                <a href="{{ path('app_question_index') }}" 
+                   class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Retour à la liste
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title text-dark">{{ question.text }}</h5>
+            <p class="mb-1"><strong>Type :</strong> {{ question.type }}</p>
+            <p class="mb-1"><strong>Points :</strong> {{ question.points }}</p>
+            <p class="mb-1">
+                <strong>Examen :</strong> {{ question.exam ? question.exam.title : 'Aucun examen associé' }}
+            </p>
+
+            {% if question.content %}
+                <hr>
+                <p class="card-text"><strong>Consigne :</strong> {{ question.content }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h5 class="text-secondary mb-3">💡 Choix associés :</h5>
+
+        {% if question.choices|length > 0 %}
+            <ul class="list-group shadow-sm">
+                {% for choice in question.choices %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ choice.text }}</span>
+                        {% if choice.isCorrect %}
+                            <span class="badge bg-success px-3 py-2">Correct</span>
+                        {% else %}
+                            <span class="badge bg-light text-muted px-3 py-2">Incorrect</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted mt-2">Aucun choix ajouté pour cette question.</p>
+        {% endif %}
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="{{ path('app_choice_new', {'question': question.id}) }}" 
+           class="btn btn-outline-primary btn-sm">
+            ➕ Ajouter un choix
+        </a>
+    </div>
+</div>
+{% endblock %}

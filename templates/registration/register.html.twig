@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% block title %}📝 Inscription | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-5" style="max-width: 550px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Créer un compte EduTest</h4>
+        </div>
+        <div class="card-body p-4">
+            {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.email, 'Adresse e-mail', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'ex: utilisateur@demo.fr'}}) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': '••••••••'}}) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.role, 'Rôle dans la plateforme', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(registrationForm.role, {'attr': {'class': 'form-select'}}) }}
+                <small class="text-muted">Choisissez votre type de compte (enseignant ou étudiant)</small>
+                {{ form_errors(registrationForm.role) }}
+            </div>
+
+            <div class="form-check mb-3">
+                {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(registrationForm.agreeTerms, "J'accepte les conditions d'utilisation", {'label_attr': {'class': 'form-check-label'}}) }}
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <button class="btn btn-primary w-100 mt-3">
+                <i class="bi bi-person-plus"></i> S’inscrire
+            </button>
+
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+
+    <p class="text-center mt-4 text-muted">
+        Vous avez déjà un compte ?
+        <a href="{{ path('app_login') }}" class="fw-semibold">Se connecter</a>
+    </p>
+</div>
+{% endblock %}

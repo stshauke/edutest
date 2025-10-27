@@ -1,3 +1,4 @@
+// assets/app.js
 import './bootstrap.js';
 /*
  * Welcome to your app's main JavaScript file!

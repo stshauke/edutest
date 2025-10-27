@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes examens | EduTest{% endblock %}
+
+{% block body %}
+{% set assignments = assignments|default([]) %}
+
+<div class="container py-5">
+    <h1 class="text-center text-primary mb-4">📝 Mes examens</h1>
+
+    {% if assignments is empty %}
+        <div class="alert alert-info text-center shadow-sm">
+            <i class="bi bi-info-circle"></i> Aucun examen ne vous a encore été attribué.
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle shadow-sm">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Examen</th>
+                        <th>Description</th>
+                        <th>Durée</th>
+                        <th>Statut</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for a in assignments %}
+                    <tr>
+                        <td><strong>{{ a.exam.title }}</strong></td>
+                        <td>{{ a.exam.description|default('-')|length > 60 ? a.exam.description|slice(0,60) ~ '…' : a.exam.description }}</td>
+                        <td>{{ a.exam.durationMinutes }} min</td>
+                        <td>
+                            {% if a.status == 'ASSIGNED' %}
+                                <span class="badge bg-secondary">Non commencé</span>
+                            {% elseif a.status == 'STARTED' %}
+                                <span class="badge bg-warning text-dark">En cours</span>
+                            {% elseif a.status == 'SUBMITTED' %}
+                                <span class="badge bg-success">Soumis</span>
+                            {% else %}
+                                <span class="badge bg-light text-muted">Inconnu</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if a.status == 'ASSIGNED' %}
+                                <a href="{{ path('student_exam_start', {id: a.id}) }}" class="btn btn-sm btn-outline-success">🚀 Commencer</a>
+                            {% elseif a.status == 'STARTED' %}
+                                <a href="{{ path('student_exam_run', {id: a.id}) }}" class="btn btn-sm btn-outline-warning">▶️ Continuer</a>
+                            {% elseif a.status == 'SUBMITTED' %}
+                                <a href="{{ path('student_result_detail', {id: a.id}) }}" class="btn btn-sm btn-outline-info">📊 Résultat</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ path('student_results') }}" class="btn btn-outline-primary">
+            📈 Voir mes résultats
+        </a>
+    </div>
+</div>
+{% endblock %}

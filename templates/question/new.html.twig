@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+{% block title %}➕ Nouvelle question | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h1 class="h4 text-primary mb-0">🧩 Ajouter une nouvelle question</h1>
+
+        {% if app.request.query.get('exam') %}
+            <a href="{{ path('app_exam_show', {'id': app.request.query.get('exam')}) }}" 
+               class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Retour à l'examen
+            </a>
+        {% else %}
+            <a href="{{ path('app_question_index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+
+            <div class="mb-3">
+                {{ form_label(form.text, 'Texte de la question', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.text, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Quelle est la capitale de la France ?'}}) }}
+                {{ form_errors(form.text) }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.type, 'Type de question', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
+                    {{ form_errors(form.type) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.points, 'Nombre de points', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(form.points, {'attr': {'class': 'form-control', 'min': 1}}) }}
+                    {{ form_errors(form.points) }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.exam, 'Examen associé', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.exam, {'attr': {'class': 'form-select'}}) }}
+                {{ form_errors(form.exam) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.content, 'Consigne (facultatif)', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.content, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                {{ form_errors(form.content) }}
+            </div>
+
+            {# ✅ Section des choix QCM #}
+            <hr class="my-4">
+            <h5 class="mb-3">🧩 Choix multiples (si QCM)</h5>
+
+            <div id="choices-collection" data-prototype="{{ form_widget(form.choices.vars.prototype)|e('html_attr') }}">
+                {% for choiceForm in form.choices %}
+                    <div class="card mb-2 p-3">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-10">
+                                {{ form_row(choiceForm.label) }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form_row(choiceForm.isCorrect) }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-choice">
+                ➕ Ajouter un choix
+            </button>
+
+            <div class="text-end mt-4">
+                <button class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Créer la question
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('choices-collection');
+    const addBtn = document.getElementById('add-choice');
+
+    function addChoice() {
+        const index = container.querySelectorAll('.card').length;
+        const prototype = container.dataset.prototype.replace(/__name__/g, index);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'card mb-2 p-3';
+        wrapper.innerHTML = prototype;
+        container.appendChild(wrapper);
+    }
+
+    if (addBtn && container && container.dataset.prototype) {
+        addBtn.addEventListener('click', addChoice);
+    }
+});
+</script>
+{% endblock %}

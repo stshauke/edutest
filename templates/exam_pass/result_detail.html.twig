@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}📊 Résultat de l’examen | {{ exam.title }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">{{ exam.title }}</h1>
+        <p class="text-muted">Résultat de votre examen</p>
+        <div class="alert alert-info d-inline-block">
+            <strong>Note finale :</strong> 
+            {{ assignment.finalGrade is not null ? assignment.finalGrade : 'Non noté' }} / 20
+        </div>
+    </div>
+
+    {% for answer in answers %}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="fw-bold text-dark">
+                    {{ loop.index }}. {{ answer.question.text }}
+                </h5>
+                <p class="text-muted small mb-2">
+                    ({{ answer.question.points }} point{{ answer.question.points > 1 ? 's' : '' }})
+                </p>
+
+                {% if answer.question.type == 'QCM' %}
+                    {% if answer.question.choices|length > 0 %}
+                        <ul class="list-group list-group-flush">
+                            {% for choice in answer.question.choices %}
+                                {% set isSelected = choice in answer.selectedChoices %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center
+                                    {% if choice.isCorrect %}list-group-item-success
+                                    {% elseif isSelected %}list-group-item-danger
+                                    {% endif %}">
+                                    {{ choice.label }}
+                                    {% if choice.isCorrect %}
+                                        <span class="badge bg-success">Correct</span>
+                                    {% elseif isSelected %}
+                                        <span class="badge bg-danger">Votre choix</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted fst-italic">Aucun choix disponible.</p>
+                    {% endif %}
+                {% else %}
+                    <p class="mt-2"><strong>Votre réponse :</strong></p>
+                    <p class="bg-light p-2 rounded">{{ answer.answerText ?: '— Aucune réponse —' }}</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="text-center mt-4">
+        <a href="{{ path('student_results') }}" class="btn btn-outline-primary">
+            🔙 Retour à mes résultats
+        </a>
+    </div>
+</div>
+{% endblock %}

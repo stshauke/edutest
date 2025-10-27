@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un choix | EduTest{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h4 text-warning mb-0">✏️ Modifier le choix</h1>
+        <div>
+            <a href="{{ path('app_choice_index') }}" class="btn btn-outline-secondary btn-sm me-2">
+                <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+            {{ include('choice/_delete_form.html.twig') }}
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+            <div class="mb-3">
+                {{ form_label(form.text, 'Texte du choix', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.text, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le texte du choix'}}) }}
+                {{ form_errors(form.text) }}
+            </div>
+
+            <div class="form-check mb-3">
+                {{ form_widget(form.isCorrect, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(form.isCorrect, 'Ce choix est correct', {'label_attr': {'class': 'form-check-label'}}) }}
+                {{ form_errors(form.isCorrect) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.question, 'Question associée', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.question, {'attr': {'class': 'form-select'}}) }}
+                {{ form_errors(form.question) }}
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-warning">
+                    <i class="bi bi-save"></i> Mettre à jour
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

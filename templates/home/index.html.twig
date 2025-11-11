@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}🏫 EduTest — Plateforme d'évaluation moderne{% endblock %}
+{% block title %}<i class="fa-solid fa-school"></i> EduTest — Plateforme d'évaluation moderne{% endblock %}
 
 {% block body %}
 <!-- 🧭 NAVBAR FIXE -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-3">
   <div class="container">
     <a class="navbar-brand fw-bold text-white fs-4" href="{{ path('home') }}">
-      🎓 <span class="text-warning">EduTest</span>
+      <i class="fa-solid fa-graduation-cap"></i> <span class="text-warning">EduTest</span>
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -25,23 +25,29 @@
           <li class="nav-item ms-3">
             {% if 'ROLE_TEACHER' in app.user.roles %}
               <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
-                👩‍🏫 Tableau de bord
+                <i class="fa-solid fa-chalkboard-teacher"></i> Tableau de bord
               </a>
             {% elseif 'ROLE_STUDENT' in app.user.roles %}
               <a href="{{ path('student_exams') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
-                🎓 Mes examens
+                <i class="fa-solid fa-user-graduate"></i> Mes examens
               </a>
             {% endif %}
           </li>
           <li class="nav-item ms-2">
-            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm fw-semibold">🚪 Déconnexion</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm fw-semibold">
+              <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+            </a>
           </li>
         {% else %}
           <li class="nav-item ms-3">
-            <a href="{{ path('app_login') }}" class="btn btn-light btn-sm fw-semibold text-primary">🔐 Connexion</a>
+            <a href="{{ path('app_login') }}" class="btn btn-light btn-sm fw-semibold text-primary">
+              <i class="fa-solid fa-lock"></i> Connexion
+            </a>
           </li>
           <li class="nav-item ms-2">
-            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-sm fw-semibold">📝 Inscription</a>
+            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-sm fw-semibold">
+              <i class="fa-solid fa-pen-to-square"></i> Inscription
+            </a>
           </li>
         {% endif %}
       </ul>
@@ -58,10 +64,10 @@
     {% if not app.user %}
       <div class="d-flex justify-content-center gap-3 flex-wrap">
         <a href="{{ path('app_login') }}" class="btn btn-lg btn-light text-primary fw-semibold px-4 py-2 shadow-sm">
-          🔐 Se connecter
+          <i class="fa-solid fa-lock"></i> Se connecter
         </a>
         <a href="{{ path('app_register') }}" class="btn btn-lg btn-outline-light fw-semibold px-4 py-2">
-          📝 S'inscrire
+          <i class="fa-solid fa-pen-to-square"></i> S'inscrire
         </a>
       </div>
     {% endif %}
@@ -72,7 +78,7 @@
 <section id="features" class="py-5 bg-light">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="fw-bold text-primary" data-aos="fade-up">🚀 Pourquoi choisir EduTest ?</h2>
+      <h2 class="fw-bold text-primary" data-aos="fade-up"><i class="fa-solid fa-rocket"></i> Pourquoi choisir EduTest ?</h2>
       <p class="text-muted" data-aos="fade-up" data-aos-delay="100">
         Une solution intuitive, rapide et complète pour simplifier vos examens.
       </p>
@@ -80,14 +86,14 @@
 
     <div class="row g-4">
       {% set features = [
-        {'icon':'💻','title':'Interface intuitive','text':'Une expérience fluide et agréable pour enseignants et étudiants.'},
-        {'icon':'⚡','title':'Correction automatique','text':'Les résultats sont calculés instantanément grâce à un système intelligent.'},
-        {'icon':'📊','title':'Suivi des performances','text':'Des statistiques claires pour suivre la progression des élèves.'}
+        {'icon':'<i class="fa-solid fa-laptop-code"></i>','title':'Interface intuitive','text':'Une expérience fluide et agréable pour enseignants et étudiants.'},
+        {'icon':'<i class="fa-solid fa-bolt"></i>','title':'Correction automatique','text':'Les résultats sont calculés instantanément grâce à un système intelligent.'},
+        {'icon':'<i class="fa-solid fa-chart-column"></i>','title':'Suivi des performances','text':'Des statistiques claires pour suivre la progression des élèves.'}
       ] %}
       {% for f in features %}
         <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
           <div class="card h-100 border-0 shadow-lg p-4 text-center rounded-4">
-            <div class="icon mb-3" style="font-size:3rem;">{{ f.icon }}</div>
+            <div class="icon mb-3" style="font-size:3rem;">{{ f.icon|raw }}</div>
             <h5 class="fw-bold">{{ f.title }}</h5>
             <p class="text-muted">{{ f.text }}</p>
           </div>
@@ -121,7 +127,7 @@
 <section id="testimonials" class="py-5 bg-light">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="fw-bold text-primary" data-aos="fade-up">💬 Témoignages</h2>
+      <h2 class="fw-bold text-primary" data-aos="fade-up"><i class="fa-solid fa-comments"></i> Témoignages</h2>
       <p class="text-muted" data-aos="fade-up" data-aos-delay="100">
         Ils utilisent EduTest au quotidien et partagent leur expérience.
       </p>
@@ -156,23 +162,23 @@
   <div class="container" data-aos="zoom-in">
     {% if app.user %}
       {% if 'ROLE_TEACHER' in app.user.roles %}
-        <h2 class="fw-bold mb-3">Bienvenue, {{ app.user.fullName|default('Enseignant') }} 👋</h2>
+        <h2 class="fw-bold mb-3">Bienvenue, {{ app.user.fullName|default('Enseignant') }} <i class="fa-solid fa-hand-wave"></i></h2>
         <p class="mb-4">Accédez à votre tableau de bord pour gérer vos examens.</p>
         <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
-          📘 Mon tableau de bord
+          <i class="fa-solid fa-book-open"></i> Mon tableau de bord
         </a>
       {% elseif 'ROLE_STUDENT' in app.user.roles %}
-        <h2 class="fw-bold mb-3">Prêt à relever un défi ? 💪</h2>
+        <h2 class="fw-bold mb-3">Prêt à relever un défi ? <i class="fa-solid fa-dumbbell"></i></h2>
         <p class="mb-4">Découvrez vos examens disponibles et mesurez vos progrès.</p>
         <a href="{{ path('student_exams') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
-          🧠 Commencer un examen
+          <i class="fa-solid fa-brain"></i> Commencer un examen
         </a>
       {% endif %}
     {% else %}
       <h2 class="fw-bold mb-3">Rejoignez EduTest dès aujourd’hui !</h2>
       <p class="mb-4">Profitez d’une expérience d’évaluation fluide et intuitive.</p>
       <a href="{{ path('app_register') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
-        ✨ Créer un compte gratuit
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Créer un compte gratuit
       </a>
     {% endif %}
   </div>

@@ -1,131 +1,80 @@
-<nav class="navbar navbar-expand-lg navbar-custom fixed-top py-3">
-<div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-3">
+  <div class="container">
     {# 🏠 LOGO / MARQUE #}
-<a class="navbar-brand d-flex align-items-center" href="{{ path('home') }}">
-<i class="fa-solid fa-graduation-cap me-2 text-highlight"></i>
-<span>EduTest</span>
-</a>
- 
-    <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-<span class="navbar-toggler-icon"></span>
-</button>
- 
+    <a class="navbar-brand fw-bold text-white fs-4" href="{{ path('home') }}">
+      🎓 <span class="text-warning">EduTest</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-<ul class="navbar-nav align-items-lg-center">
-        {# 🔹 Liens publics #}
-<li class="nav-item"><a class="nav-link" href="{{ path('home') }}">Accueil</a></li>
-<li class="nav-item"><a class="nav-link" href="#features">Fonctionnalités</a></li>
-<li class="nav-item"><a class="nav-link" href="#stats">Statistiques</a></li>
-<li class="nav-item"><a class="nav-link" href="#testimonials">Témoignages</a></li>
-<li class="nav-item"><a class="nav-link" href="#cta">Commencer</a></li>
- 
-        {# 👤 Gestion selon le rôle #}
+      <ul class="navbar-nav align-items-lg-center">
+
+        {# ========================== #
+           🔹 Liens publics (home page)
+        # ========================== #}
+        <li class="nav-item"><a class="nav-link text-white" href="{{ path('home') }}">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#features">Fonctionnalités</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#stats">Statistiques</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#testimonials">Témoignages</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#cta">Commencer</a></li>
+
+        {# ========================== #
+           👤 Gestion selon le rôle
+        # ========================== #}
         {% if app.user %}
+          {# === ADMIN === #}
           {% if 'ROLE_ADMIN' in app.user.roles %}
-<li class="nav-item ms-3">
-<a href="{{ path('admin_dashboard') }}" class="btn btn-sm btn-custom fw-semibold">
-<i class="fa-solid fa-gear"></i> Espace Admin
-</a>
-</li>
+            <li class="nav-item ms-3">
+              <a href="{{ path('admin_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                ⚙️ Espace Admin
+              </a>
+            </li>
           {% endif %}
+
+          {# === ENSEIGNANT === #}
           {% if 'ROLE_TEACHER' in app.user.roles %}
-<li class="nav-item ms-3">
-<a href="{{ path('teacher_dashboard') }}" class="btn btn-sm btn-custom fw-semibold">
-<i class="fa-solid fa-chalkboard-teacher"></i> Tableau de bord
-</a>
-</li>
+            <li class="nav-item ms-3">
+              <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                👩‍🏫 Tableau de bord
+              </a>
+            </li>
           {% endif %}
+
+          {# === ÉTUDIANT === #}
           {% if 'ROLE_STUDENT' in app.user.roles %}
-<li class="nav-item ms-3">
-<a href="{{ path('student_exams') }}" class="btn btn-sm btn-custom fw-semibold">
-<i class="fa-solid fa-user-graduate"></i> Mes examens
-</a>
-</li>
+            <li class="nav-item ms-3">
+              <a href="{{ path('student_exams') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
+                🎓 Mes examens
+              </a>
+            </li>
           {% endif %}
-<li class="nav-item ms-2">
-<a href="{{ path('app_logout') }}" class="btn btn-sm btn-outline-light fw-semibold border-0">
-<i class="fa-solid fa-right-from-bracket"></i> Déconnexion
-</a>
-</li>
+
+          {# === DÉCONNEXION === #}
+          <li class="nav-item ms-2">
+            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm fw-semibold">
+              🚪 Déconnexion
+            </a>
+          </li>
+
         {% else %}
-<li class="nav-item ms-3">
-<a href="{{ path('app_login') }}" class="btn btn-sm btn-auth fw-semibold">
-<i class="fa-solid fa-lock"></i> Connexion
-</a>
-</li>
-<li class="nav-item ms-2">
-<a href="{{ path('app_register') }}" class="btn btn-sm btn-auth fw-semibold secondary">
-<i class="fa-solid fa-pen-to-square"></i> Inscription
-</a>
-</li>
+          {# ========================== #
+             🔓 Utilisateur non connecté
+          # ========================== #}
+          <li class="nav-item ms-3">
+            <a href="{{ path('app_login') }}" class="btn btn-light btn-sm fw-semibold text-primary">
+              🔐 Connexion
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-sm fw-semibold">
+              📝 Inscription
+            </a>
+          </li>
         {% endif %}
-</ul>
-</div>
-</div>
+      </ul>
+    </div>
+  </div>
 </nav>
- 
-<style>
-:root {
-  --primary: #1e88e5;
-  --primary-light: #64b5f6;
-  --text-light: #e3ebf6;
-  --border-color: rgba(255, 255, 255, 0.1);
-}
- 
-/* === GLASSMORPHIC NAVBAR === */
-.navbar-custom {
-  background: rgba(15, 25, 45, 0.45);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-.navbar-custom .navbar-brand {
-  font-size: 1.4rem;
-  color: var(--primary-light) !important;
-  font-weight: 700;
-}
-.text-highlight { color: var(--primary-light); }
- 
-.navbar-custom .nav-link {
-  color: var(--text-light) !important;
-  margin: 0 0.6rem;
-  font-weight: 500;
-  position: relative;
-  transition: color 0.3s ease;
-}
-.navbar-custom .nav-link::after {
-  content: "";
-  position: absolute;
-  width: 0%;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background: var(--primary-light);
-  transition: width 0.3s ease;
-}
-.navbar-custom .nav-link:hover { color: var(--primary-light) !important; }
-.navbar-custom .nav-link:hover::after { width: 100%; }
- 
-/* === Unified button style === */
-.navbar-custom .btn-auth {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: #fff !important;
-  border: none;
-  border-radius: 0.6rem;
-  padding: 0.45rem 0.9rem;
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(30,136,229,0.3);
-  transition: all 0.3s ease;
-}
-.navbar-custom .btn-auth:hover {
-  background: linear-gradient(135deg, var(--primary-light), #90caf9);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(100,181,246,0.4);
-}
- 
-/* For subtle difference on hover only */
-.navbar-custom .btn-auth.secondary:hover {
-  background: linear-gradient(135deg, #90caf9, var(--primary-light));
-}
-</style>

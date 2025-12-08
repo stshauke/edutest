@@ -1,284 +1,312 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}📊 Tableau de bord enseignant | EduTest{% endblock %}
+{% block title %}Tableau de bord enseignant | EduTest{% endblock %}
 
 {% block stylesheets %}
-{{ parent() }}
-<style>
-/* === Animations modernes === */
-.fade-in {
-    opacity: 0;
-    transform: translateY(15px);
-    animation: fadeInUp 0.8s ease forwards;
-}
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
+  {{ parent() }}
+  <style>
+    .admin-layout {
+      min-height: calc(100vh - 80px);
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
     }
-}
 
-.chart-container {
-    opacity: 0;
-    transform: scale(0.98);
-    animation: fadeChart 1s ease forwards 0.3s;
-}
-@keyframes fadeChart {
-    to {
-        opacity: 1;
-        transform: scale(1);
+    /* Cartes statistiques */
+    .admin-stat-card {
+      border-radius: 1.1rem;
+      border: 1px solid #e5e7eb;
     }
-}
 
-/* === Cartes modernisées === */
-.card {
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-}
+    .admin-stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      background: #eff4ff;
+    }
 
-.btn {
-    transition: all 0.3s ease;
-}
-.btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
-}
-</style>
+    .admin-stat-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Cartes génériques */
+    .card {
+      border-radius: 1.1rem;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .table thead th {
+      background-color: #000000;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+    }
+
+    .chart-wrapper {
+      height: 320px;
+    }
+  </style>
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid py-4 fade-in">
-    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-        <h1 class="fw-bold text-primary mb-2">👩‍🏫 Tableau de bord enseignant</h1>
+<div class="container-xl admin-layout">
+  <main>
 
-        <div class="d-flex gap-2">
-            <a href="{{ path('app_exam_new') }}" class="btn btn-outline-primary shadow-sm">
-                <i class="bi bi-plus-circle"></i> Créer un examen
-            </a>
-            <a href="{{ path('teacher_assignment_new') }}" class="btn btn-outline-success shadow-sm">
-                <i class="bi bi-person-plus"></i> Affecter un examen
-            </a>
+    {# ========================== HEADER ========================== #}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+      <div>
+        <div class="section-title mb-1">Enseignant</div>
+        <h1 class="h2 fw-bold text-primary mb-1">Tableau de bord</h1>
+        <p class="text-muted small mb-0">
+          Vue d’ensemble de vos examens, copies rendues et performances des étudiants.
+        </p>
+      </div>
+      <div class="d-flex flex-column align-items-md-end mt-3 mt-md-0">
+        <div class="mb-2">
+          <a href="{{ path('app_exam_new') }}" class="btn btn-outline-primary btn-sm me-2">
+            <i class="bi bi-plus-circle me-1"></i> Créer un examen
+          </a>
+          <a href="{{ path('teacher_assignment_new') }}" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-person-plus me-1"></i> Affecter un examen
+          </a>
         </div>
+        <div class="text-muted small">
+          Dernière mise à jour :
+          <strong>{{ "now"|date("d/m/Y H:i") }}</strong>
+        </div>
+      </div>
     </div>
 
-    {# ========= STATISTIQUES GLOBALES ========= #}
-    <div class="row g-4 mb-4 fade-in">
-        <div class="col-md-3">
-            <div class="card shadow border-0 h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-3 p-3 me-3 bg-primary bg-opacity-10 text-primary">
-                        <i class="bi bi-journal-text" style="font-size: 2rem;"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Total d’examens</div>
-                        <div class="h4 mb-0">
-                            {% set totalExams = exams is defined ? (exams.getTotalItemCount ?? exams|length) : stats|length %}
-                            {{ totalExams }}
-                        </div>
-                    </div>
-                </div>
+    {# ========================== STATISTIQUES ========================== #}
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow-sm border-0 p-3 h-100 admin-stat-card">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="admin-stat-icon text-primary">
+              <i class="bi bi-journal-text"></i>
             </div>
+          </div>
+          <div class="admin-stat-title text-muted mb-1">Total d’examens</div>
+          <div class="h4 fw-bold mb-0">
+            {% set totalExams = exams is defined ? (exams.getTotalItemCount ?? exams|length) : stats|length %}
+            {{ totalExams }}
+          </div>
         </div>
+      </div>
 
-        <div class="col-md-3">
-            <div class="card shadow border-0 h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-3 p-3 me-3 bg-success bg-opacity-10 text-success">
-                        <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Total d’assignations</div>
-                        <div class="h4 mb-0">{{ totalAssignments|default(0) }}</div>
-                    </div>
-                </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow-sm border-0 p-3 h-100 admin-stat-card">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="admin-stat-icon text-success">
+              <i class="bi bi-people-fill"></i>
             </div>
+          </div>
+          <div class="admin-stat-title text-muted mb-1">Total d’assignations</div>
+          <div class="h4 fw-bold mb-0">{{ totalAssignments|default(0) }}</div>
         </div>
+      </div>
 
-        <div class="col-md-3">
-            <div class="card shadow border-0 h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-3 p-3 me-3 bg-info bg-opacity-10 text-info">
-                        <i class="bi bi-bar-chart-fill" style="font-size: 2rem;"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Taux de soumission</div>
-                        <div class="h4 mb-0">{{ submissionRate|default(0) }}%</div>
-                    </div>
-                </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow-sm border-0 p-3 h-100 admin-stat-card">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="admin-stat-icon text-info">
+              <i class="bi bi-bar-chart-fill"></i>
             </div>
+          </div>
+          <div class="admin-stat-title text-muted mb-1">Taux de soumission</div>
+          <div class="h4 fw-bold mb-0">{{ submissionRate|default(0) }}%</div>
         </div>
+      </div>
 
-        <div class="col-md-3">
-            <div class="card shadow border-0 h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-3 p-3 me-3 bg-warning bg-opacity-10 text-warning">
-                        <i class="bi bi-person-check-fill" style="font-size: 2rem;"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Étudiants évalués</div>
-                        <div class="h4 mb-0">{{ uniqueStudentsCount|default(0) }}</div>
-                    </div>
-                </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow-sm border-0 p-3 h-100 admin-stat-card">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="admin-stat-icon text-warning">
+              <i class="bi bi-person-check-fill"></i>
             </div>
+          </div>
+          <div class="admin-stat-title text-muted mb-1">Étudiants évalués</div>
+          <div class="h4 fw-bold mb-0">{{ uniqueStudentsCount|default(0) }}</div>
         </div>
+      </div>
     </div>
 
-    {# ========= CHART COMBINÉ ========= #}
-    <div class="card shadow-sm border-0 mb-4 chart-container">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-graph-up-arrow me-2"></i> Statistiques globales</h5>
-            <small class="opacity-75">Moyennes par examen et moyenne générale</small>
-        </div>
-        <div class="card-body" style="height: 320px;">
-            {% if stats is defined and stats|length > 0 %}
-                <canvas id="examStatsChart"></canvas>
-            {% else %}
-                <p class="text-muted text-center mb-0">Aucune donnée disponible pour le graphique.</p>
-            {% endif %}
-        </div>
+    {# ========================== STATISTIQUES GLOBALES (CHART) ========================== #}
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="bi bi-graph-up-arrow me-2"></i> Statistiques globales
+        </h5>
+        <small class="opacity-75">Moyennes par examen et moyenne générale</small>
+      </div>
+      <div class="card-body chart-wrapper">
+        {% if stats is defined and stats|length > 0 %}
+          <canvas id="examStatsChart"></canvas>
+        {% else %}
+          <p class="text-muted text-center mb-0">Aucune donnée disponible pour le graphique.</p>
+        {% endif %}
+      </div>
     </div>
 
-    {# ========= TABLE DES EXAMENS ========= #}
-    <div class="card shadow-sm border-0 fade-in">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 text-primary"><i class="bi bi-list-task me-2"></i> Statistiques par examen</h5>
+    {# ========================== TABLEAU PAR EXAMEN ========================== #}
+    <section class="mb-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-primary">
+            <i class="bi bi-list-task me-2"></i> Statistiques par examen
+          </h5>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Examen</th>
-                            <th class="text-center">Copies rendues</th>
-                            <th class="text-center">Moyenne (/20)</th>
-                            <th class="text-center">Écart-type</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for s in stats %}
-                            <tr>
-                                <td>
-                                    <strong>{{ s.exam.title }}</strong><br>
-                                    <small class="text-muted">{{ s.exam.description|default('Aucune description') }}</small>
-                                </td>
-                                <td class="text-center">{{ s.count|default(0) }}</td>
-                                <td class="text-center">
-                                    {% if s.mean is not null %}
-                                        {{ s.mean|number_format(2, ',', ' ') }}
-                                    {% else %}
-                                        <span class="text-muted">—</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    {% if s.std is not null %}
-                                        {{ s.std|number_format(2, ',', ' ') }}
-                                    {% else %}
-                                        <span class="text-muted">—</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    <a href="{{ path('admin_exam_export_csv', {id: s.exam.id}) }}" class="btn btn-sm btn-outline-success me-2">
-                                        <i class="bi bi-file-earmark-spreadsheet"></i> CSV
-                                    </a>
-                                    <a href="{{ path('admin_exam_export_pdf', {id: s.exam.id}) }}" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-file-earmark-pdf"></i> PDF
-                                    </a>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">Aucun examen trouvé.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-dark">
+                <tr>
+                  <th>Examen</th>
+                  <th class="text-center">Copies rendues</th>
+                  <th class="text-center">Moyenne (/20)</th>
+                  <th class="text-center">Écart-type</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in stats %}
+                  <tr>
+                    <td>
+                      <strong>{{ s.exam.title }}</strong><br>
+                      <small class="text-muted">
+                        {{ s.exam.description|default('Aucune description') }}
+                      </small>
+                    </td>
+                    <td class="text-center">{{ s.count|default(0) }}</td>
+                    <td class="text-center">
+                      {% if s.mean is not null %}
+                        {{ s.mean|number_format(2, ',', ' ') }}
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-center">
+                      {% if s.std is not null %}
+                        {{ s.std|number_format(2, ',', ' ') }}
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-center">
+                      <a href="{{ path('admin_exam_export_csv', {id: s.exam.id}) }}"
+                         class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> CSV
+                      </a>
+                      <a href="{{ path('admin_exam_export_pdf', {id: s.exam.id}) }}"
+                         class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                      </a>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="5" class="text-center text-muted">Aucun examen trouvé.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
 
-            {% if exams is defined %}
-                <div class="pagination d-flex justify-content-center mt-3">
-                    {{ knp_pagination_render(exams) }}
-                </div>
-            {% endif %}
+          {% if exams is defined %}
+            <div class="pagination d-flex justify-content-center mt-3">
+              {{ knp_pagination_render(exams) }}
+            </div>
+          {% endif %}
         </div>
-    </div>
+      </div>
+    </section>
+
+  </main>
 </div>
 {% endblock %}
 
 {% block javascripts %}
-{{ parent() }}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const canvas = document.getElementById("examStatsChart");
-    if (!canvas) return;
+  {{ parent() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const canvas = document.getElementById("examStatsChart");
+      if (!canvas) return;
 
-    const labels = [
+      const labels = [
         {% for s in stats %}
-            {{ s.exam.title|json_encode|raw }}{% if not loop.last %},{% endif %}
+          {{ s.exam.title|json_encode|raw }}{% if not loop.last %},{% endif %}
         {% endfor %}
-    ];
-    const dataAverages = [
-        {% for s in stats %}
-            {{ s.mean is not null ? s.mean : 0 }}{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
+      ];
 
-    const overallAverage = dataAverages.length > 0
+      const dataAverages = [
+        {% for s in stats %}
+          {{ s.mean is not null ? s.mean : 0 }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ];
+
+      const overallAverage = dataAverages.length > 0
         ? dataAverages.reduce((a, b) => a + b, 0) / dataAverages.length
         : 0;
 
-    new Chart(canvas, {
+      new Chart(canvas, {
         data: {
-            labels: labels,
-            datasets: [
-                {
-                    type: "bar",
-                    label: "Moyenne (/20)",
-                    data: dataAverages,
-                    backgroundColor: "rgba(13, 110, 253, 0.6)",
-                    borderColor: "rgba(13, 110, 253, 1)",
-                    borderWidth: 1,
-                    borderRadius: 6,
-                    maxBarThickness: 50
-                },
-                {
-                    type: "line",
-                    label: "Moyenne générale",
-                    data: Array(labels.length).fill(overallAverage),
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    borderWidth: 2,
-                    tension: 0.3,
-                    pointRadius: 4,
-                    fill: false
-                }
-            ]
+          labels: labels,
+          datasets: [
+            {
+              type: "bar",
+              label: "Moyenne (/20)",
+              data: dataAverages,
+              backgroundColor: "rgba(13, 110, 253, 0.6)",
+              borderColor: "rgba(13, 110, 253, 1)",
+              borderWidth: 1,
+              borderRadius: 6,
+              maxBarThickness: 50
+            },
+            {
+              type: "line",
+              label: "Moyenne générale",
+              data: Array(labels.length).fill(overallAverage),
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 4,
+              fill: false
+            }
+          ]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-                duration: 1200,
-                easing: 'easeOutQuart'
-            },
-            plugins: {
-                legend: { display: true, position: "bottom" },
-                tooltip: { mode: "index", intersect: false }
-            },
-            scales: {
-                x: { grid: { display: false } },
-                y: {
-                    beginAtZero: true,
-                    max: 20,
-                    ticks: { stepSize: 5 },
-                    grid: { drawBorder: false }
-                }
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: "bottom" },
+            tooltip: { mode: "index", intersect: false }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              beginAtZero: true,
+              max: 20,
+              ticks: { stepSize: 5 },
+              grid: { drawBorder: false }
             }
+          }
         }
+      });
     });
-});
-</script>
+  </script>
 {% endblock %}

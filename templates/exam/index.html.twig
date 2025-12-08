@@ -1,121 +1,243 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}📘 Liste des examens | EduTest{% endblock %}
-
-{% block body %}
-<div class="container py-4">
-
-    <!-- 🔙 Bouton Retour -->
-    <div class="mb-3">
-        {% if 'ROLE_ADMIN' in app.user.roles %}
-            <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Retour au tableau de bord admin
-            </a>
-        {% elseif 'ROLE_TEACHER' in app.user.roles %}
-            <a href="{{ path('teacher_dashboard') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Retour au tableau de bord enseignant
-            </a>
-        {% else %}
-            <a href="{{ path('home') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> Retour à l’accueil
-            </a>
-        {% endif %}
-    </div>
-
-    <!-- 🧭 En-tête -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h1 class="h3 text-primary mb-0">
-            <i class="bi bi-journal-text"></i> Gestion des examens
-        </h1>
-        <div class="d-flex flex-wrap gap-2">
-            {% if is_granted('ROLE_TEACHER') %}
-                <a href="{{ path('teacher_assignment_index') }}" class="btn btn-outline-primary btn-sm shadow-sm">
-                    <i class="bi bi-people-fill"></i> Gérer les affectations
-                </a>
-            {% endif %}
-            <a href="{{ path('app_exam_new') }}" class="btn btn-success btn-sm shadow-sm">
-                <i class="bi bi-plus-circle"></i> Nouvel examen
-            </a>
-        </div>
-    </div>
-
-    <!-- 📋 Liste des examens -->
-    {% if exams is not empty %}
-        <div class="table-responsive shadow-sm">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Titre</th>
-                        <th>Description</th>
-                        <th>Durée</th>
-                        <th>Dates</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for exam in exams %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>
-                            <strong>{{ exam.title }}</strong><br>
-                            <small class="text-muted">ID : {{ exam.id }}</small>
-                        </td>
-                        <td>
-                            {% if exam.description %}
-                                {{ exam.description|length > 50 
-                                    ? exam.description|slice(0, 50) ~ '…'
-                                    : exam.description 
-                                }}
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
-                        <td>{{ exam.durationMinutes }} min</td>
-                        <td>
-                            <small>
-                                <i class="bi bi-calendar-event"></i>
-                                {{ exam.startAt ? exam.startAt|date('d/m/Y H:i') : '-' }}<br>
-                                <i class="bi bi-arrow-right-short"></i>
-                                {{ exam.endAt ? exam.endAt|date('d/m/Y H:i') : '-' }}
-                            </small>
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ path('app_exam_show', {'id': exam.id}) }}" 
-                               class="btn btn-outline-primary btn-sm me-1" 
-                               title="Voir">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{{ path('app_exam_edit', {'id': exam.id}) }}" 
-                               class="btn btn-outline-warning btn-sm me-1" 
-                               title="Modifier">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            {{ include('exam/_delete_form.html.twig') }}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <div class="alert alert-secondary text-center shadow-sm">
-            Aucun examen n’a encore été créé.<br>
-            <a href="{{ path('app_exam_new') }}" class="alert-link">Créer un examen</a>.
-        </div>
-    {% endif %}
-</div>
-{% endblock %}
+{% block title %}Liste des examens | EduTest{% endblock %}
 
 {% block stylesheets %}
-<style>
-.table thead th {
-    background-color: #0d6efd !important;
-    color: #fff;
-}
-.btn-outline-secondary:hover {
-    background-color: #0d6efd;
-    color: #fff;
-}
-</style>
+  {{ parent() }}
+  <style>
+    .exam-list-layout {
+      min-height: calc(100vh - 80px);
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+
+    .page-header-small {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+    }
+
+    .table-card {
+      border-radius: 1.1rem;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+    }
+
+    .table-card .card-header {
+      background-color: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* ===== STYLE TABLEAU D’EXAMENS ===== */
+    table.exam-table {
+      margin-bottom: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .exam-table thead th {
+      background: #0d6efd;
+      color: #fff;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border: none;
+      padding-top: .75rem;
+      padding-bottom: .75rem;
+    }
+
+    .exam-table tbody tr {
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .exam-table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .exam-table tbody td {
+      vertical-align: middle;
+      padding-top: .9rem;
+      padding-bottom: .9rem;
+    }
+
+    .exam-table tbody tr:hover {
+      background-color: #f3f4ff;
+    }
+
+    .exam-title {
+      font-weight: 600;
+      font-size: .95rem;
+    }
+
+    .exam-id {
+      font-size: .8rem;
+      color: #9ca3af;
+    }
+
+    .exam-desc {
+      font-size: .9rem;
+      color: #4b5563;
+    }
+
+    .exam-duration-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .15rem .55rem;
+      border-radius: 999px;
+      background:#eff6ff;
+      color:#1d4ed8;
+      font-size: .8rem;
+      font-weight: 500;
+    }
+
+    .exam-dates small {
+      font-size: .8rem;
+      color: #4b5563;
+    }
+
+    .exam-actions .btn {
+      border-radius: 999px;
+      padding-inline: .55rem;
+      padding-block: .25rem;
+    }
+
+    .exam-actions .btn i {
+      font-size: .9rem;
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: #0d6efd;
+      color: #fff;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl exam-list-layout">
+
+  {# 🔙 Bouton Retour #}
+  <div class="mb-3">
+    {% if 'ROLE_ADMIN' in app.user.roles %}
+      <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Retour au tableau de bord admin
+      </a>
+    {% elseif 'ROLE_TEACHER' in app.user.roles %}
+      <a href="{{ path('teacher_dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Retour au tableau de bord enseignant
+      </a>
+    {% else %}
+      <a href="{{ path('home') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Retour à l’accueil
+      </a>
+    {% endif %}
+  </div>
+
+  {# En-tête #}
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <div class="page-header-small mb-1">Examens</div>
+      <h1 class="h3 text-primary mb-0">
+        <i class="bi bi-journal-text me-2"></i> Gestion des examens
+      </h1>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      {% if is_granted('ROLE_TEACHER') %}
+        <a href="{{ path('teacher_assignment_index') }}" class="btn btn-outline-primary btn-sm shadow-sm">
+          <i class="bi bi-people-fill me-1"></i> Gérer les affectations
+        </a>
+      {% endif %}
+      <a href="{{ path('app_exam_new') }}" class="btn btn-success btn-sm shadow-sm">
+        <i class="bi bi-plus-circle me-1"></i> Nouvel examen
+      </a>
+    </div>
+  </div>
+
+  {# Liste des examens #}
+  {% if exams is not empty %}
+    <div class="card shadow-sm border-0 table-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary">
+          <i class="bi bi-list-task me-2"></i> Examens disponibles
+        </h5>
+        <span class="text-muted small">
+          Total : <strong>{{ exams|length }}</strong>
+        </span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table exam-table align-middle">
+            <thead>
+              <tr>
+                <th style="width:60px;">ID</th>
+                <th style="width:28%;">Titre</th>
+                <th>Description</th>
+                <th style="width:110px;">Durée</th>
+                <th style="width:210px;">Dates</th>
+                <th style="width:160px;" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for exam in exams %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                  <div class="exam-title">{{ exam.title }}</div>
+                  <div class="exam-id">ID : {{ exam.id }}</div>
+                </td>
+                <td>
+                  <div class="exam-desc">
+                    {% if exam.description %}
+                      {{ exam.description|length > 80
+                        ? exam.description|slice(0, 80) ~ '…'
+                        : exam.description
+                      }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </div>
+                </td>
+                <td>
+                  <span class="exam-duration-badge">
+                    <i class="bi bi-stopwatch"></i> {{ exam.durationMinutes }} min
+                  </span>
+                </td>
+                <td class="exam-dates">
+                  <small>
+                    <i class="bi bi-calendar-event me-1"></i>
+                    {{ exam.startAt ? exam.startAt|date('d/m/Y H:i') : '-' }}<br>
+                    <i class="bi bi-arrow-right-short me-1"></i>
+                    {{ exam.endAt ? exam.endAt|date('d/m/Y H:i') : '-' }}
+                  </small>
+                </td>
+                <td class="text-center exam-actions">
+                  <div class="d-inline-flex gap-1">
+                    <a href="{{ path('app_exam_show', {'id': exam.id}) }}"
+                       class="btn btn-outline-primary btn-sm"
+                       title="Voir">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{{ path('app_exam_edit', {'id': exam.id}) }}"
+                       class="btn btn-outline-warning btn-sm"
+                       title="Modifier">
+                      <i class="bi bi-pencil-square"></i>
+                    </a>
+                    {{ include('exam/_delete_form.html.twig') }}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-secondary text-center shadow-sm">
+      Aucun examen n’a encore été créé.<br>
+      <a href="{{ path('app_exam_new') }}" class="alert-link">Créer un examen</a>.
+    </div>
+  {% endif %}
+</div>
 {% endblock %}

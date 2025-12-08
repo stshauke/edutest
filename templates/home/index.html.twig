@@ -1,195 +1,233 @@
+{# templates/home/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}<i class="fa-solid fa-school"></i> EduTest — Plateforme d'évaluation moderne{% endblock %}
+{% block title %}EduTest – Plateforme d'examens en ligne{% endblock %}
 
 {% block body %}
-<!-- 🧭 NAVBAR FIXE -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-3">
-  <div class="container">
-    <a class="navbar-brand fw-bold text-white fs-4" href="{{ path('home') }}">
-      <i class="fa-solid fa-graduation-cap"></i> <span class="text-warning">EduTest</span>
-    </a>
+  {# HERO PRINCIPAL #}
+  <section class="py-5 py-lg-6 bg-primary bg-gradient text-light">
+    <div class="container">
+      <div class="row align-items-center g-4 mt-5">
+        <div class="col-lg-7">
+          <p class="text-uppercase mb-2 small text-white-50 fw-semibold">
+            Plateforme d’évaluation en ligne
+          </p>
+          <h1 class="display-5 fw-bold mb-3">
+            Organisez vos examens en ligne<br>
+            avec <span class="text-warning">EduTest</span>
+          </h1>
+          <p class="lead text-white-75 mb-4">
+            Création d’examens, passation sécurisée par les étudiants, correction automatique des QCM
+            et statistiques claires pour les enseignants.
+          </p>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav align-items-lg-center">
-        <li class="nav-item"><a class="nav-link text-white" href="#features">Fonctionnalités</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#stats">Statistiques</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#testimonials">Témoignages</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#cta">Commencer</a></li>
-
-        {% if app.user %}
-          <li class="nav-item ms-3">
-            {% if 'ROLE_TEACHER' in app.user.roles %}
-              <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
-                <i class="fa-solid fa-chalkboard-teacher"></i> Tableau de bord
-              </a>
-            {% elseif 'ROLE_STUDENT' in app.user.roles %}
-              <a href="{{ path('student_exams') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
-                <i class="fa-solid fa-user-graduate"></i> Mes examens
-              </a>
-            {% endif %}
-          </li>
-          <li class="nav-item ms-2">
-            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm fw-semibold">
-              <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <a href="{{ path('app_login') }}" class="btn btn-light btn-lg px-4">
+              <i class="bi bi-box-arrow-in-right me-1"></i>
+              Se connecter
             </a>
-          </li>
-        {% else %}
-          <li class="nav-item ms-3">
-            <a href="{{ path('app_login') }}" class="btn btn-light btn-sm fw-semibold text-primary">
-              <i class="fa-solid fa-lock"></i> Connexion
+            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg px-4">
+              <i class="bi bi-person-plus me-1"></i>
+              Créer un compte
             </a>
-          </li>
-          <li class="nav-item ms-2">
-            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-sm fw-semibold">
-              <i class="fa-solid fa-pen-to-square"></i> Inscription
-            </a>
-          </li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
+          </div>
 
-<!-- 🟦 HERO -->
-<section class="hero d-flex align-items-center text-center text-white">
-  <div class="container" data-aos="fade-up">
-    <h1 class="fw-bold display-4 mb-3">Bienvenue sur <span class="text-warning">EduTest</span></h1>
-    <p class="lead mb-4">La plateforme d’évaluation moderne pour apprendre, enseigner et progresser ensemble.</p>
+          <p class="small text-white-50 mb-0">
+            Déjà utilisée par <span class="fw-semibold text-white">+200</span> étudiants et
+            <span class="fw-semibold text-white">+10</span> enseignants.
+          </p>
+        </div>
 
-    {% if not app.user %}
-      <div class="d-flex justify-content-center gap-3 flex-wrap">
-        <a href="{{ path('app_login') }}" class="btn btn-lg btn-light text-primary fw-semibold px-4 py-2 shadow-sm">
-          <i class="fa-solid fa-lock"></i> Se connecter
-        </a>
-        <a href="{{ path('app_register') }}" class="btn btn-lg btn-outline-light fw-semibold px-4 py-2">
-          <i class="fa-solid fa-pen-to-square"></i> S'inscrire
-        </a>
-      </div>
-    {% endif %}
-  </div>
-</section>
+        <div class="col-lg-5">
+          <div class="card border-0 shadow-lg rounded-4 bg-white text-dark">
+            <div class="card-body p-4">
+              <h2 class="h5 fw-semibold mb-3">
+                Pourquoi choisir <span class="text-primary">EduTest</span> ?
+              </h2>
 
-<!-- 💡 FEATURES -->
-<section id="features" class="py-5 bg-light">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="fw-bold text-primary" data-aos="fade-up"><i class="fa-solid fa-rocket"></i> Pourquoi choisir EduTest ?</h2>
-      <p class="text-muted" data-aos="fade-up" data-aos-delay="100">
-        Une solution intuitive, rapide et complète pour simplifier vos examens.
-      </p>
-    </div>
+              <ul class="list-unstyled mb-0">
+                <li class="d-flex mb-3">
+                  <div class="me-3 text-primary">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                  </div>
+                  <div>
+                    <div class="fw-semibold">Gain de temps pour les enseignants</div>
+                    <div class="text-muted small">
+                      Création d’examens, duplication, affectation aux groupes et correction automatique des QCM.
+                    </div>
+                  </div>
+                </li>
 
-    <div class="row g-4">
-      {% set features = [
-        {'icon':'<i class="fa-solid fa-laptop-code"></i>','title':'Interface intuitive','text':'Une expérience fluide et agréable pour enseignants et étudiants.'},
-        {'icon':'<i class="fa-solid fa-bolt"></i>','title':'Correction automatique','text':'Les résultats sont calculés instantanément grâce à un système intelligent.'},
-        {'icon':'<i class="fa-solid fa-chart-column"></i>','title':'Suivi des performances','text':'Des statistiques claires pour suivre la progression des élèves.'}
-      ] %}
-      {% for f in features %}
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
-          <div class="card h-100 border-0 shadow-lg p-4 text-center rounded-4">
-            <div class="icon mb-3" style="font-size:3rem;">{{ f.icon|raw }}</div>
-            <h5 class="fw-bold">{{ f.title }}</h5>
-            <p class="text-muted">{{ f.text }}</p>
+                <li class="d-flex mb-3">
+                  <div class="me-3 text-primary">
+                    <i class="bi bi-shield-lock-fill fs-5"></i>
+                  </div>
+                  <div>
+                    <div class="fw-semibold">Passation encadrée</div>
+                    <div class="text-muted small">
+                      Durée limitée, fenêtre de passage, une seule tentative par étudiant, sauvegarde des réponses.
+                    </div>
+                  </div>
+                </li>
+
+                <li class="d-flex">
+                  <div class="me-3 text-primary">
+                    <i class="bi bi-bar-chart-line-fill fs-5"></i>
+                  </div>
+                  <div>
+                    <div class="fw-semibold">Suivi des résultats</div>
+                    <div class="text-muted small">
+                      Notes par étudiant, statistiques par examen, export CSV/PDF pour archivage.
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
 
-<!-- 📈 STATS -->
-<section id="stats" class="stats-section text-white text-center py-5">
-  <div class="container" data-aos="zoom-in">
-    <div class="row g-4">
-      {% set stats = [
-        {'count':350, 'label':'Étudiants actifs'},
-        {'count':42, 'label':'Examens créés'},
-        {'count':1250, 'label':'Copies corrigées'},
-        {'count':98, 'label':'% de satisfaction'}
-      ] %}
-      {% for s in stats %}
-        <div class="col-md-3">
-          <h2 class="fw-bold counter" data-count="{{ s.count }}">0</h2>
-          <p>{{ s.label }}</p>
+      </div>
+    </div>
+  </section>
+
+  {# SECTION FONCTIONNALITÉS #}
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2 class="h3 fw-bold mb-2">Pensé pour les enseignants et les étudiants</h2>
+        <p class="text-muted mb-0">
+          Un outil simple à prendre en main, adapté aux examens de BTS, Licence Pro et Master.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="mb-3 text-primary">
+                <i class="bi bi-journal-plus fs-1"></i>
+              </div>
+              <h3 class="h5 fw-semibold">Création d’examens</h3>
+              <p class="text-muted small mb-0">
+                Définissez le titre, la durée, la période, ajoutez des questions QCM ou texte libre,
+                et affectez-les aux étudiants en quelques clics.
+              </p>
+            </div>
+          </div>
         </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
 
-<!-- 💬 TÉMOIGNAGES -->
-<section id="testimonials" class="py-5 bg-light">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="fw-bold text-primary" data-aos="fade-up"><i class="fa-solid fa-comments"></i> Témoignages</h2>
-      <p class="text-muted" data-aos="fade-up" data-aos-delay="100">
-        Ils utilisent EduTest au quotidien et partagent leur expérience.
-      </p>
-    </div>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="mb-3 text-primary">
+                <i class="bi bi-laptop fs-1"></i>
+              </div>
+              <h3 class="h5 fw-semibold">Passation étudiante</h3>
+              <p class="text-muted small mb-0">
+                Interface claire avec minuterie, gestion des réponses, validation finale unique
+                et accès ultérieur au détail de la copie.
+              </p>
+            </div>
+          </div>
+        </div>
 
-    <div class="row g-4">
-      {% set testimonials = [
-        {'name':'Marie Dupont','role':'Professeure de Mathématiques','text':'EduTest a transformé ma manière d’évaluer mes élèves. Plus rapide, plus clair, plus juste !','img':'https://randomuser.me/api/portraits/women/44.jpg'},
-        {'name':'Lucas Bernard','role':'Étudiant en Sciences','text':'Grâce à EduTest, je peux suivre mes résultats instantanément et voir où je dois progresser.','img':'https://randomuser.me/api/portraits/men/46.jpg'},
-        {'name':'Paul Moreau','role':'Enseignant en Physique','text':'Simple, élégant et efficace. Je gagne un temps précieux pour mes classes.','img':'https://randomuser.me/api/portraits/men/33.jpg'}
-      ] %}
-      {% for t in testimonials %}
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
-          <div class="card shadow border-0 rounded-4 p-4 h-100">
-            <p class="fst-italic text-muted">“{{ t.text }}”</p>
-            <div class="d-flex align-items-center mt-3">
-              <img src="{{ t.img }}" class="rounded-circle me-3" width="50">
-              <div>
-                <strong>{{ t.name }}</strong><br>
-                <small class="text-muted">{{ t.role }}</small>
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="mb-3 text-primary">
+                <i class="bi bi-clipboard-data fs-1"></i>
+              </div>
+              <h3 class="h5 fw-semibold">Correction & statistiques</h3>
+              <p class="text-muted small mb-0">
+                Correction automatique des QCM, calcul des moyennes, écart-types et export des résultats en CSV ou PDF.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  {# SECTION "COMMENT ÇA MARCHE" #}
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2 class="h4 fw-bold mb-2">Comment ça marche ?</h2>
+        <p class="text-muted small mb-0">
+          Trois étapes simples pour mettre en place vos examens en ligne.
+        </p>
+      </div>
+
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-4">
+          <div class="d-flex mb-3">
+            <div class="me-3 text-primary fw-bold fs-4">1</div>
+            <div>
+              <div class="fw-semibold">L’enseignant crée l’examen</div>
+              <div class="text-muted small">
+                Il choisit les questions, la durée, la période, puis affecte l’examen à une promotion ou à des étudiants.
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex mb-3">
+            <div class="me-3 text-primary fw-bold fs-4">2</div>
+            <div>
+              <div class="fw-semibold">L’étudiant passe l’épreuve</div>
+              <div class="text-muted small">
+                Il se connecte, voit les examens disponibles, répond aux questions dans le temps imparti et soumet.
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex">
+            <div class="me-3 text-primary fw-bold fs-4">3</div>
+            <div>
+              <div class="fw-semibold">Les résultats sont disponibles</div>
+              <div class="text-muted small">
+                La plateforme corrige les QCM, calcule les notes et génère des statistiques pour l’enseignant.
               </div>
             </div>
           </div>
         </div>
-      {% endfor %}
+
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="row text-center">
+                <div class="col-4 border-end">
+                  <div class="fw-bold fs-4 text-primary">+200</div>
+                  <div class="small text-muted">Étudiants</div>
+                </div>
+                <div class="col-4 border-end">
+                  <div class="fw-bold fs-4 text-primary">+10</div>
+                  <div class="small text-muted">Enseignants</div>
+                </div>
+                <div class="col-4">
+                  <div class="fw-bold fs-4 text-primary">+50</div>
+                  <div class="small text-muted">Examens gérés</div>
+                </div>
+              </div>
+              <hr>
+              <p class="small text-muted mb-0 text-center">
+                EduTest fonctionne en local (localhost) avec Symfony / MySQL, idéal pour les projets pédagogiques de niveau Bac+2 à Bac+5.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
-  </div>
-</section>
-
-<!-- ✅ CTA -->
-<section id="cta" class="cta text-center text-white py-5">
-  <div class="container" data-aos="zoom-in">
-    {% if app.user %}
-      {% if 'ROLE_TEACHER' in app.user.roles %}
-        <h2 class="fw-bold mb-3">Bienvenue, {{ app.user.fullName|default('Enseignant') }} <i class="fa-solid fa-hand-wave"></i></h2>
-        <p class="mb-4">Accédez à votre tableau de bord pour gérer vos examens.</p>
-        <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
-          <i class="fa-solid fa-book-open"></i> Mon tableau de bord
-        </a>
-      {% elseif 'ROLE_STUDENT' in app.user.roles %}
-        <h2 class="fw-bold mb-3">Prêt à relever un défi ? <i class="fa-solid fa-dumbbell"></i></h2>
-        <p class="mb-4">Découvrez vos examens disponibles et mesurez vos progrès.</p>
-        <a href="{{ path('student_exams') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
-          <i class="fa-solid fa-brain"></i> Commencer un examen
-        </a>
-      {% endif %}
-    {% else %}
-      <h2 class="fw-bold mb-3">Rejoignez EduTest dès aujourd’hui !</h2>
-      <p class="mb-4">Profitez d’une expérience d’évaluation fluide et intuitive.</p>
-      <a href="{{ path('app_register') }}" class="btn btn-warning btn-lg px-5 py-2 fw-semibold shadow">
-        <i class="fa-solid fa-wand-magic-sparkles"></i> Créer un compte gratuit
-      </a>
-    {% endif %}
-  </div>
-</section>
-
-<!-- 🌐 FOOTER FIXE -->
-
+  </section>
 {% endblock %}
 
 {% block stylesheets %}
 <style>
+.bg-custom-purple {
+    background-color: #4A206A !important;
+}
 body {
   scroll-behavior: smooth;
   display: flex;
@@ -198,7 +236,7 @@ body {
 }
 .hero {
   background: linear-gradient(to right, rgba(0, 51, 102, 0.85), rgba(0, 102, 204, 0.85)),
-              url('https://images.unsplash.com/photo-1600185365524-6cc57d1e8b1d?auto=format&fit=crop&w=1500&q=80') center/cover;
+              url('https://previews.123rf.com/images/annastills/annastills2307/annastills230700046/208165604-group-of-students-studying-together-in-the-library-they-using-gadgets-during-their-teamwork.jpg') center/cover;
   min-height: 90vh;
   color: #fff;
   margin-top: 75px;
@@ -220,6 +258,14 @@ body {
   bottom: 0;
   width: 100%;
 }
+  /* coins un peu plus arrondis partout */
+  .card.rounded-4 {
+    border-radius: 1rem;
+  }
+
+  .btn.btn-lg {
+    border-radius: 999px;
+  }
 </style>
 {% endblock %}
 

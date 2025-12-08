@@ -1,65 +1,157 @@
 {% extends 'base.html.twig' %}
+
 {% block title %}Mes examens | EduTest{% endblock %}
+
+{# --- Styles spécifiques à la page --- #}
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .student-layout {
+      padding-top: 2.5rem;
+      padding-bottom: 2.5rem;
+    }
+
+    .student-header-icon {
+      font-size: 2.4rem;
+    }
+
+    .exam-table-card {
+      border-radius: 1.1rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .exam-table-card .table {
+      margin-bottom: 0;
+    }
+
+    .exam-table-card thead th {
+      background-color: #e5f0ff;
+      border-bottom: 0;
+      font-weight: 600;
+    }
+
+    .exam-table-card tbody tr + tr {
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .badge-pill-soft {
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .exam-actions .btn {
+      min-width: 130px;
+    }
+  </style>
+{% endblock %}
 
 {% block body %}
 {% set assignments = assignments|default([]) %}
 
-<div class="container py-5">
-    <h1 class="text-center text-primary mb-4">📝 Mes examens</h1>
+<div class="container-xl student-layout">
 
-    {% if assignments is empty %}
-        <div class="alert alert-info text-center shadow-sm">
-            <i class="bi bi-info-circle"></i> Aucun examen ne vous a encore été attribué.
-        </div>
-    {% else %}
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle shadow-sm">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Examen</th>
-                        <th>Description</th>
-                        <th>Durée</th>
-                        <th>Statut</th>
-                        <th class="text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for a in assignments %}
-                    <tr>
-                        <td><strong>{{ a.exam.title }}</strong></td>
-                        <td>{{ a.exam.description|default('-')|length > 60 ? a.exam.description|slice(0,60) ~ '…' : a.exam.description }}</td>
-                        <td>{{ a.exam.durationMinutes }} min</td>
-                        <td>
-                            {% if a.status == 'ASSIGNED' %}
-                                <span class="badge bg-secondary">Non commencé</span>
-                            {% elseif a.status == 'STARTED' %}
-                                <span class="badge bg-warning text-dark">En cours</span>
-                            {% elseif a.status == 'SUBMITTED' %}
-                                <span class="badge bg-success">Soumis</span>
-                            {% else %}
-                                <span class="badge bg-light text-muted">Inconnu</span>
-                            {% endif %}
-                        </td>
-                        <td class="text-center">
-                            {% if a.status == 'ASSIGNED' %}
-                                <a href="{{ path('student_exam_start', {id: a.id}) }}" class="btn btn-sm btn-outline-success">🚀 Commencer</a>
-                            {% elseif a.status == 'STARTED' %}
-                                <a href="{{ path('student_exam_run', {id: a.id}) }}" class="btn btn-sm btn-outline-warning">▶️ Continuer</a>
-                            {% elseif a.status == 'SUBMITTED' %}
-                                <a href="{{ path('student_result_detail', {id: a.id}) }}" class="btn btn-sm btn-outline-info">📊 Résultat</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
+  {# ========== HEADER ========== #}
+  <div class="text-center mb-4">
+    <h1 class="h3 text-primary fw-bold mb-1">Mes examens</h1>
+    <p class="text-muted small mb-0">
+      Retrouvez ici les examens qui vous ont été attribués et l’état de leur avancement.
+    </p>
+  </div>
 
-    <div class="text-center mt-4">
-        <a href="{{ path('student_results') }}" class="btn btn-outline-primary">
-            📈 Voir mes résultats
-        </a>
+  {# ========== CONTENU ========== #}
+  {% if assignments is empty %}
+    <div class="alert alert-info text-center shadow-sm">
+      <i class="bi bi-info-circle me-1"></i>
+      Aucun examen ne vous a encore été attribué.
     </div>
+  {% else %}
+    <div class="card exam-table-card shadow-sm">
+      <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary">
+          <i class="bi bi-journal-text me-2"></i> Examens disponibles
+        </h5>
+        <span class="text-muted small">
+          Total : <strong>{{ assignments|length }}</strong>
+        </span>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Examen</th>
+                <th>Description</th>
+                <th class="text-center">Durée</th>
+                <th class="text-center">Statut</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for a in assignments %}
+              {% set desc = a.exam.description ?? '-' %}
+              <tr>
+                <td>
+                  <strong>{{ a.exam.title }}</strong><br>
+                  <small class="text-muted">ID : {{ a.exam.id }}</small>
+                </td>
+
+                <td>
+                  {% if desc != '-' %}
+                    {{ desc|length > 80 ? desc|slice(0, 80) ~ '…' : desc }}
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-center">
+                  {{ a.exam.durationMinutes }} min
+                </td>
+
+                <td class="text-center">
+                  {% if a.status == 'ASSIGNED' %}
+                    <span class="badge bg-secondary badge-pill-soft">Non commencé</span>
+                  {% elseif a.status == 'STARTED' %}
+                    <span class="badge bg-warning text-dark badge-pill-soft">En cours</span>
+                  {% elseif a.status == 'SUBMITTED' %}
+                    <span class="badge bg-success badge-pill-soft">Soumis</span>
+                  {% else %}
+                    <span class="badge bg-light text-muted badge-pill-soft">Inconnu</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-center exam-actions">
+                  {% if a.status == 'ASSIGNED' %}
+                    <a href="{{ path('student_exam_start', {id: a.id}) }}"
+                       class="btn btn-sm btn-outline-success">
+                       Commencer
+                    </a>
+                  {% elseif a.status == 'STARTED' %}
+                    <a href="{{ path('student_exam_run', {id: a.id}) }}"
+                       class="btn btn-sm btn-outline-warning">
+                      <i class="bi bi-play-circle me-1"></i> Continuer
+                    </a>
+                  {% elseif a.status == 'SUBMITTED' %}
+                    <a href="{{ path('student_result_detail', {id: a.id}) }}"
+                       class="btn btn-sm btn-outline-info">
+                      <i class="bi bi-graph-up-arrow me-1"></i> Résultat
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="text-center mt-4">
+    <a href="{{ path('student_results') }}" class="btn btn-outline-primary px-4">
+      <i class="bi bi-bar-chart-fill me-1"></i> Voir mes résultats
+    </a>
+  </div>
 </div>
 {% endblock %}

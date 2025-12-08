@@ -1,173 +1,211 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}🧠 Passer l'examen | {{ exam.title }}{% endblock %}
+{% block title %}Passer l'examen | {{ exam.title }}{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="text-center mb-4">
+<div class="container exam-run-container py-5" style="max-width: 900px;">
+
+    <!-- En-tête Examen -->
+    <div class="text-center mb-5">
         <h1 class="text-primary fw-bold">{{ exam.title }}</h1>
-        <p class="text-muted mb-1">
-            ⏱️ Durée : {{ exam.durationMinutes }} min |
-            Fin prévue à {{ deadline }}
+
+        <p class="text-muted mt-2">
+            ⏱️ Durée : <strong>{{ exam.durationMinutes }} min</strong> · 
+            Fin prévue à <strong>{{ deadline|date('d/m/Y H:i') }}</strong>
         </p>
-        <div id="countdown" class="fs-5 fw-semibold text-danger"></div>
+
+        <div id="countdown" class="countdown-pill mt-3">
+            ⏳ Chargement du temps restant...
+        </div>
     </div>
 
+    <!-- FORM -->
     <form method="post" action="{{ path('student_exam_submit', {'id': assignment.id}) }}">
         {% for question in questions %}
-            <div class="card shadow-sm mb-4 border-0">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-3">
-                        {{ loop.index }}. {{ question.text }}
-                    </h5>
-                    <p class="text-muted small mb-3">
-                        ({{ question.points }} point{{ question.points > 1 ? 's' : '' }})
-                    </p>
+            <div class="card border-0 shadow-sm p-4 mb-4 question-card">
+                <h5 class="fw-bold mb-2">
+                    {{ loop.index }}. {{ question.text }}
+                </h5>
 
-                    {% if question.type == 'QCM' %}
-                        <div class="row g-3">
-                            {% for choice in question.choices %}
-                                <div class="col-md-6">
-                                    <label class="choice-card w-100 p-3 d-flex align-items-center border rounded-3 shadow-sm">
-                                        <input type="checkbox"
-                                               name="answers[{{ question.id }}][]"
-                                               value="{{ choice.id }}"
-                                               class="choice-input me-2"
-                                               data-question="{{ question.id }}">
-                                        <span class="choice-text">{{ choice.label }}</span>
-                                    </label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <textarea class="form-control"
-                                  name="answers[{{ question.id }}][text]"
-                                  rows="3"
-                                  placeholder="Votre réponse ici..."
-                                  data-question="{{ question.id }}"></textarea>
-                    {% endif %}
-                </div>
+                <p class="small text-muted mb-3">
+                    ({{ question.points }} point{{ question.points > 1 ? 's' : '' }})
+                </p>
+
+                {% if question.type == 'QCM' %}
+                    <div class="row gy-3">
+                        {% for choice in question.choices %}
+                            <div class="col-md-6">
+                                <label class="choice-card shadow-sm">
+                                    <input type="checkbox"
+                                           name="answers[{{ question.id }}][]"
+                                           value="{{ choice.id }}"
+                                           class="choice-input"
+                                           data-question="{{ question.id }}">
+
+                                    <span class="choice-text">{{ choice.label }}</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <textarea class="form-control answer-textarea"
+                              name="answers[{{ question.id }}][text]"
+                              rows="3"
+                              placeholder="Votre réponse ici..."
+                              data-question="{{ question.id }}"></textarea>
+                {% endif %}
             </div>
         {% endfor %}
 
         <div class="text-center mt-4">
-            <button id="submitButton" type="submit" class="btn btn-success btn-lg px-5">
-                ✅ Soumettre mes réponses
+            <button id="submitButton" type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                Soumettre mes réponses
             </button>
         </div>
     </form>
+
 </div>
+{% endblock %}
 
 {% block stylesheets %}
 <style>
+/* Timer */
+.countdown-pill {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #ffe3e3;
+    color: #b30000;
+    border: 1px solid #ffb3b3;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Card questions */
+.question-card {
+    border-radius: 14px;
+}
+
+/* Cards des choix */
 .choice-card {
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    background-color: #ffffff;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid #e2e6ea;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.25s ease-in-out;
+    position: relative;
 }
 .choice-card:hover {
-    background-color: #f0f7ff;
+    background: #f0f6ff;
     border-color: #0d6efd;
 }
+
 .choice-input {
     position: absolute;
-    opacity: 0; /* toujours accessible mais invisible */
+    opacity: 0;
 }
+
 .choice-card.active {
-    background-color: #e7f1ff !important;
-    border: 2px solid #0d6efd !important;
-    border-radius: 8px;
-    font-weight: 600;
+    background: #e6f0ff;
+    border: 2px solid #0d6efd;
     color: #0d6efd;
 }
-.choice-text {
-    width: 100%;
+
+.answer-textarea {
+    border-radius: 10px;
 }
-#countdown {
-    color: #dc3545;
+
+/* Animation douce */
+.choice-card,
+.question-card {
+    transition: transform .15s ease, box-shadow .2s ease;
 }
+.choice-card:hover {
+    transform: translateY(-2px);
+}
+.exam-run-container {
+    margin-top: 2.5rem; 
+}
+
 </style>
 {% endblock %}
 
 {% block javascripts %}
-<script>
-// =============================
-// 🕒 Compte à rebours
-// =============================
-const deadline = new Date("{{ deadline|e('js') }}").getTime();
-const countdownEl = document.getElementById("countdown");
-const form = document.querySelector("form");
+  {{ parent() }}
+  <script>
+    // === TIMER ===
+    const deadline = new Date("{{ deadline|date('c') }}").getTime();
+    const countdownEl = document.getElementById("countdown");
+    const form = document.querySelector("form");
 
-if (deadline > new Date().getTime() + 1000) {
-    const timer = setInterval(() => {
-        const now = new Date().getTime();
-        const distance = deadline - now;
+    if (deadline > Date.now()) {
+        const timer = setInterval(() => {
+            const now = Date.now();
+            const distance = deadline - now;
 
-        if (distance <= 0) {
-            clearInterval(timer);
-            countdownEl.textContent = "⏰ Temps écoulé !";
-            if (!form.dataset.submitted) {
-                form.dataset.submitted = "true";
-                form.submit();
+            if (distance <= 0) {
+                clearInterval(timer);
+                countdownEl.textContent = "⛔ Temps écoulé !";
+                countdownEl.style.background = "#ffb3b3";
+                if (!form.dataset.submitted) {
+                    form.dataset.submitted = "true";
+                    form.submit();
+                }
+                return;
             }
-            return;
-        }
 
-        const minutes = Math.floor((distance / (1000 * 60)) % 60);
-        const seconds = Math.floor((distance / 1000) % 60);
-        countdownEl.textContent = `Temps restant : ${minutes} min ${seconds < 10 ? '0' + seconds : seconds} s`;
-    }, 1000);
-}
-
-// =============================
-// 💾 Sauvegarde + coloration immédiate
-// =============================
-const storageKey = "exam_answers_{{ assignment.id }}";
-const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
-
-// 🔄 Restaurer
-document.querySelectorAll('.choice-input').forEach(input => {
-    const qid = input.dataset.question;
-    if (saved[qid] && saved[qid].includes(input.value)) {
-        input.checked = true;
-        input.closest('.choice-card').classList.add('active');
+            const m = Math.floor(distance / 60000);
+            const s = Math.floor((distance % 60000) / 1000);
+            countdownEl.textContent = `⏳ ${m} min ${s < 10 ? "0"+s : s}s restantes`;
+        }, 1000);
     }
-});
 
-// 🎨 Gérer la couleur dès le clic
-document.querySelectorAll('.choice-card').forEach(card => {
-    const input = card.querySelector('.choice-input');
-    card.addEventListener('click', (e) => {
-        // Évite double bascule
-        e.preventDefault();
-        input.checked = !input.checked;
-        card.classList.toggle('active', input.checked);
+    // === SAUVEGARDE LOCALE ===
+    const storageKey = "exam_answers_{{ assignment.id }}";
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
 
+    // Restaurer QCM
+    document.querySelectorAll('.choice-input').forEach(input => {
         const qid = input.dataset.question;
-        saved[qid] = saved[qid] || [];
-        if (input.checked) {
-            if (!saved[qid].includes(input.value)) saved[qid].push(input.value);
-        } else {
-            saved[qid] = saved[qid].filter(v => v !== input.value);
+        if (saved[qid]?.includes(input.value)) {
+            input.checked = true;
+            input.closest('.choice-card').classList.add('active');
         }
-        localStorage.setItem(storageKey, JSON.stringify(saved));
     });
-});
 
-// 🔤 Sauvegarde texte
-document.querySelectorAll('textarea').forEach(area => {
-    const qid = area.dataset.question;
-    if (saved[qid]) area.value = saved[qid];
-    area.addEventListener('input', () => {
-        saved[qid] = area.value;
-        localStorage.setItem(storageKey, JSON.stringify(saved));
+    // Toggle visuel + sauvegarde
+    document.querySelectorAll('.choice-card').forEach(card => {
+        const input = card.querySelector('.choice-input');
+
+        card.addEventListener('click', e => {
+            e.preventDefault();
+            input.checked = !input.checked;
+            card.classList.toggle('active', input.checked);
+
+            const qid = input.dataset.question;
+            saved[qid] ||= [];
+            input.checked
+                ? saved[qid].push(input.value)
+                : saved[qid] = saved[qid].filter(v => v !== input.value);
+
+            localStorage.setItem(storageKey, JSON.stringify(saved));
+        });
     });
-});
 
-// 🧹 Nettoyage à la soumission
-form.addEventListener('submit', () => {
-    localStorage.removeItem(storageKey);
-});
+    // Restaurer les réponses texte
+    document.querySelectorAll('textarea').forEach(area => {
+        const qid = area.dataset.question;
+        if (saved[qid]) area.value = saved[qid];
+        area.addEventListener('input', () => {
+            saved[qid] = area.value;
+            localStorage.setItem(storageKey, JSON.stringify(saved));
+        });
+    });
+
+    // Nettoyer à la soumission
+    form.addEventListener('submit', () => localStorage.removeItem(storageKey));
 </script>
-{% endblock %}
 {% endblock %}

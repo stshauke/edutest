@@ -1,13 +1,23 @@
+{# templates/question/new.html.twig #}
 {% extends 'base.html.twig' %}
-{% block title %}➕ Nouvelle question | EduTest{% endblock %}
+{% import _self as macros %}
+
+{% block title %}Nouvelle question | EduTest{% endblock %}
 
 {% block body %}
-<div class="container py-4">
+<div class="container-xl py-4">
+
+    {# HEADER #}
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h1 class="h4 text-primary mb-0">🧩 Ajouter une nouvelle question</h1>
+        <div>
+            <div class="text-uppercase small text-muted fw-semibold" style="letter-spacing:.08em;">
+                Questions
+            </div>
+            <h1 class="h4 text-primary mb-0">Ajouter une nouvelle question</h1>
+        </div>
 
         {% if app.request.query.get('exam') %}
-            <a href="{{ path('app_exam_show', {'id': app.request.query.get('exam')}) }}" 
+            <a href="{{ path('app_exam_show', {'id': app.request.query.get('exam')}) }}"
                class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-arrow-left"></i> Retour à l'examen
             </a>
@@ -19,66 +29,113 @@
     </div>
 
     <div class="card shadow-sm border-0">
-        <div class="card-body">
+        <div class="card-body p-4">
+
             {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
 
-            <div class="mb-3">
-                {{ form_label(form.text, 'Texte de la question', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.text, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Quelle est la capitale de la France ?'}}) }}
-                {{ form_errors(form.text) }}
-            </div>
+            {# ========= INFOS GÉNÉRALES ========= #}
+            <h6 class="text-muted text-uppercase small fw-semibold mb-3" style="letter-spacing:.08em;">
+                Informations de la question
+            </h6>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    {{ form_label(form.type, 'Type de question', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                    {{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
-                    {{ form_errors(form.type) }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    {{ form_label(form.points, 'Nombre de points', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                    {{ form_widget(form.points, {'attr': {'class': 'form-control', 'min': 1}}) }}
-                    {{ form_errors(form.points) }}
-                </div>
-            </div>
-
+            {# Examen associé AVANT le texte #}
             <div class="mb-3">
-                {{ form_label(form.exam, 'Examen associé', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.exam, {'attr': {'class': 'form-select'}}) }}
+                {{ form_label(form.exam, 'Examen associé', {
+                    'label_attr': {'class': 'form-label fw-semibold'}
+                }) }}
+                {{ form_widget(form.exam, {
+                    'attr': {'class': 'form-select'}
+                }) }}
                 {{ form_errors(form.exam) }}
             </div>
 
+            {# Texte de la question #}
             <div class="mb-3">
-                {{ form_label(form.content, 'Consigne (facultatif)', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.content, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                {{ form_label(form.text, 'Texte de la question', {
+                    'label_attr': {'class': 'form-label fw-semibold'}
+                }) }}
+                {{ form_widget(form.text, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Ex : Quelle est la capitale de la France ?'
+                    }
+                }) }}
+                {{ form_errors(form.text) }}
+            </div>
+
+            {# Ligne type + points #}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.type, 'Type de question', {
+                        'label_attr': {'class': 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(form.type, {
+                        'attr': {'class': 'form-select', 'id': 'question-type'}
+                    }) }}
+                    {{ form_errors(form.type) }}
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    {{ form_label(form.points, 'Nombre de points', {
+                        'label_attr': {'class': 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(form.points, {
+                        'attr': {'class': 'form-control', 'min': 1}
+                    }) }}
+                    {{ form_errors(form.points) }}
+                </div>
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.content, 'Consigne (facultatif)', {
+                    'label_attr': {'class': 'form-label fw-semibold'}
+                }) }}
+                {{ form_widget(form.content, {
+                    'attr': {
+                        'class': 'form-control',
+                        'rows': 3,
+                        'placeholder': 'Ajoutez des précisions ou une consigne particulière pour l’étudiant…'
+                    }
+                }) }}
                 {{ form_errors(form.content) }}
             </div>
 
-            {# ✅ Section des choix QCM #}
-            <hr class="my-4">
-            <h5 class="mb-3">🧩 Choix multiples (si QCM)</h5>
 
-            <div id="choices-collection" data-prototype="{{ form_widget(form.choices.vars.prototype)|e('html_attr') }}">
-                {% for choiceForm in form.choices %}
-                    <div class="card mb-2 p-3">
-                        <div class="row g-2 align-items-center">
-                            <div class="col-md-10">
-                                {{ form_row(choiceForm.label) }}
-                            </div>
-                            <div class="col-md-2">
-                                {{ form_row(choiceForm.isCorrect) }}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+            {# ========= CHOIX QCM ========= #}
+            <hr class="my-4">
+
+            <div id="qcm-section">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="text-muted text-uppercase small fw-semibold mb-2" style="letter-spacing:.08em;">
+                    Choix multiples (QCM)
+                    </h6>
+                    <p class="text-muted small mb-2">
+                    Saisissez les différents choix, puis activez « Bonne réponse » pour les bonnes réponses.
+                    </p>
+                </div>
+
+                {% set choicePrototype = form.choices.vars.prototype %}
+
+                <div id="choices-collection"
+                     data-index="{{ form.choices|length }}"
+                     data-prototype="{{ macros.choice_row(choicePrototype)|e('html_attr') }}">
+
+                    {% for choiceForm in form.choices %}
+                        {{ macros.choice_row(choiceForm) }}
+                    {% else %}
+                        {# Aucun choix par défaut #}
+                    {% endfor %}
+                </div>
+
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm mt-2"
+                        id="add-choice">
+                    <i class="bi bi-plus-circle me-1"></i> Ajouter un choix
+                </button>
             </div>
 
-            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-choice">
-                ➕ Ajouter un choix
-            </button>
-
             <div class="text-end mt-4">
-                <button class="btn btn-success">
-                    <i class="bi bi-check-circle"></i> Créer la question
+                <button class="btn btn-success px-4">
+                    <i class="bi bi-check-circle me-1"></i> Créer la question
                 </button>
             </div>
 
@@ -87,23 +144,93 @@
     </div>
 </div>
 
+{# ===== JS ===== #}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const container = document.getElementById('choices-collection');
-    const addBtn = document.getElementById('add-choice');
+    const container   = document.getElementById('choices-collection');
+    const addBtn      = document.getElementById('add-choice');
+    const typeSelect  = document.getElementById('question-type');
+    const qcmSection  = document.getElementById('qcm-section');
+
+    function toggleQcmSection() {
+        if (!typeSelect) return;
+        const value = typeSelect.value ? typeSelect.value.toString().toLowerCase() : '';
+        qcmSection.style.display = value.includes('qcm') ? '' : 'none';
+    }
+
+    function attachRemoveHandler(choiceItem) {
+        const btn = choiceItem.querySelector('.btn-remove-choice');
+        if (btn) {
+            btn.addEventListener('click', () => choiceItem.remove());
+        }
+    }
 
     function addChoice() {
-        const index = container.querySelectorAll('.card').length;
+        const index = parseInt(container.dataset.index || '0', 10);
         const prototype = container.dataset.prototype.replace(/__name__/g, index);
+        container.dataset.index = index + 1;
+
         const wrapper = document.createElement('div');
-        wrapper.className = 'card mb-2 p-3';
-        wrapper.innerHTML = prototype;
-        container.appendChild(wrapper);
+        wrapper.innerHTML = prototype.trim();
+        const choiceItem = wrapper.firstElementChild;
+        attachRemoveHandler(choiceItem);
+        container.appendChild(choiceItem);
     }
 
     if (addBtn && container && container.dataset.prototype) {
         addBtn.addEventListener('click', addChoice);
     }
+
+    container.querySelectorAll('.choice-item').forEach(attachRemoveHandler);
+
+    if (typeSelect && qcmSection) {
+        typeSelect.addEventListener('change', toggleQcmSection);
+        toggleQcmSection();
+    }
 });
 </script>
 {% endblock %}
+
+{# ===== MACRO POUR UN CHOIX QCM ===== #}
+{% macro choice_row(choiceForm) %}
+  <div class="choice-item card border-0 shadow-sm mb-2">
+    <div class="card-body py-2">
+      <div class="row g-2 align-items-center">
+
+        {# Champ texte du choix #}
+        <div class="col-md-9">
+          {{ form_widget(choiceForm.label, {
+            attr: {
+              class: 'form-control',
+              placeholder: 'Ex : Paris'
+            }
+          }) }}
+          {{ form_errors(choiceForm.label) }}
+        </div>
+
+        {# Switch "Bonne réponse" #}
+        <div class="col-md-2">
+          <div class="form-check form-switch d-flex align-items-center justify-content-center mb-0">
+            {{ form_widget(choiceForm.isCorrect, {
+              attr: { class: 'form-check-input me-2' }
+            }) }}
+            {{ form_label(choiceForm.isCorrect, 'Bonne réponse', {
+              label_attr: { class: 'form-check-label small mb-0' }
+            }) }}
+          </div>
+          {{ form_errors(choiceForm.isCorrect) }}
+        </div>
+
+        {# Bouton supprimer #}
+        <div class="col-md-1 text-end">
+          <button type="button"
+                  class="btn btn-link text-danger btn-sm btn-remove-choice"
+                  title="Supprimer ce choix">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+

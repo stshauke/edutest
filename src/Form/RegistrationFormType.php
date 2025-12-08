@@ -65,8 +65,8 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Rôle',
                 'mapped' => false,
                 'choices' => [
-                    '👩‍🏫 Enseignant' => 'ROLE_TEACHER',
-                    '👨‍🎓 Étudiant' => 'ROLE_STUDENT',
+                    'Enseignant' => 'ROLE_TEACHER',
+                    'Étudiant' => 'ROLE_STUDENT',
                 ],
                 'attr' => ['class' => 'form-select'],
             ])

@@ -1,41 +1,151 @@
 {% extends 'base.html.twig' %}
 {% block title %}Mes résultats | EduTest{% endblock %}
 
-{% block body %}
-<div class="container py-5">
-    <h1 class="mb-4 text-center">📈 Mes résultats</h1>
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .results-layout {
+      padding-top: 2.5rem;
+      padding-bottom: 2.5rem;
+    }
 
-    {% if assignments|length == 0 %}
-        <div class="alert alert-info text-center">Aucun examen soumis pour le moment.</div>
-    {% else %}
-        <table class="table table-striped table-hover shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>Examen</th>
-                    <th>Soumis le</th>
-                    <th>Note /20</th>
-                    <th>Action</th>
-                </tr>
+    .results-header-icon {
+      font-size: 2.4rem;
+    }
+
+    .results-card {
+      border-radius: 1.1rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .results-card .table {
+      margin-bottom: 0;
+    }
+
+    .results-card thead th {
+      background-color: #e5f0ff;
+      border-bottom: 0;
+      font-weight: 600;
+    }
+
+    .results-card tbody tr + tr {
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .grade-badge {
+      min-width: 70px;
+      display: inline-block;
+      text-align: center;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.6rem;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl results-layout">
+
+  {# ========= HEADER ========= #}
+  <div class="text-center mb-4">
+    <h1 class="h3 text-primary fw-bold mb-1">Mes résultats</h1>
+    <p class="text-muted small mb-0">
+      Consultez ici vos copies rendues, votre note et le détail de vos résultats.
+    </p>
+  </div>
+
+  {% if assignments|length == 0 %}
+    <div class="alert alert-info text-center shadow-sm">
+      <i class="bi bi-info-circle me-1"></i>
+      Aucun examen soumis pour le moment.
+    </div>
+  {% else %}
+    <div class="card results-card shadow-sm mb-4">
+      <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary">
+          <i class="bi bi-journal-check me-2"></i> Résultats d’examens
+        </h5>
+        <span class="text-muted small">
+          Total : <strong>{{ assignments.getTotalItemCount ?? assignments|length }}</strong>
+        </span>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Examen</th>
+                <th>Soumis le</th>
+                <th class="text-center">Note /20</th>
+                <th class="text-center">Action</th>
+              </tr>
             </thead>
             <tbody>
-                {% for a in assignments %}
-                    <tr>
-                        <td>{{ a.exam.title }}</td>
-                        <td>{{ a.submittedAt ? a.submittedAt|date('d/m/Y H:i') : '-' }}</td>
-                        <td>{{ a.finalGrade ?? '-' }}</td>
-                        <td>
-                            <a href="{{ path('student_result_detail', {id: a.id}) }}" class="btn btn-sm btn-outline-info">
-                                📄 Détail
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% for a in assignments %}
+              {% set grade = a.finalGrade %}
+              {% set submittedAt = a.submittedAt %}
+              <tr>
+                <td>
+                  <strong>{{ a.exam.title }}</strong>
+                  {% if a.exam.description %}
+                    <br>
+                    <small class="text-muted">
+                      {{ a.exam.description|length > 70 
+                          ? a.exam.description|slice(0,70) ~ '…'
+                          : a.exam.description }}
+                    </small>
+                  {% endif %}
+                </td>
 
-        <div class="pagination d-flex justify-content-center">
-            {{ knp_pagination_render(assignments) }}
+                <td>
+                  {% if submittedAt %}
+                    {{ submittedAt|date('d/m/Y H:i') }}
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-center">
+                  {% if grade is not null %}
+                    {% if grade >= 16 %}
+                      <span class="grade-badge bg-success text-white">
+                        {{ grade|number_format(2, ',', ' ') }}
+                      </span>
+                    {% elseif grade >= 10 %}
+                      <span class="grade-badge bg-warning text-dark">
+                        {{ grade|number_format(2, ',', ' ') }}
+                      </span>
+                    {% else %}
+                      <span class="grade-badge bg-danger text-white">
+                        {{ grade|number_format(2, ',', ' ') }}
+                      </span>
+                    {% endif %}
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-center">
+                  <a href="{{ path('student_result_detail', {id: a.id}) }}"
+                     class="btn btn-sm btn-outline-info">
+                    <i class="bi bi-file-earmark-text me-1"></i> Détail
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
         </div>
+      </div>
+    </div>
+
+    {# Pagination KNP si présente #}
+    {% if assignments is defined %}
+      <div class="pagination d-flex justify-content-center">
+        {{ knp_pagination_render(assignments) }}
+      </div>
     {% endif %}
+  {% endif %}
 </div>
 {% endblock %}

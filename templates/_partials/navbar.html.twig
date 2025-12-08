@@ -1,78 +1,91 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-3">
+{# templates/_partials/navbar.html.twig #}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
   <div class="container">
-    {# 🏠 LOGO / MARQUE #}
-    <a class="navbar-brand fw-bold text-white fs-4" href="{{ path('home') }}">
-      🎓 <span class="text-warning">EduTest</span>
+
+    {# LOGO / NOM #}
+    <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="{{ path('home') }}">
+      <i class="bi bi-mortarboard-fill me-2 fs-4"></i> EduTest
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    {# BURGER MOBILE #}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav align-items-lg-center">
+    {# MENU DROITE #}
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+      {% set isAdminRoute = app.request.get('_route') starts with 'admin_' %}
 
-        {# ========================== #
-           🔹 Liens publics (home page)
-        # ========================== #}
-        <li class="nav-item"><a class="nav-link text-white" href="{{ path('home') }}">Accueil</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#features">Fonctionnalités</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#stats">Statistiques</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#testimonials">Témoignages</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#cta">Commencer</a></li>
-
-        {# ========================== #
-           👤 Gestion selon le rôle
-        # ========================== #}
         {% if app.user %}
+
+          {# Petit texte de bienvenue #}
+          <li class="nav-item d-none d-lg-block">
+            <span class="nav-link disabled text-dark fw-semibold">
+              Bonjour {{ app.user.fullName ?? app.user.userIdentifier }}
+            </span>
+          </li>
+
           {# === ADMIN === #}
           {% if 'ROLE_ADMIN' in app.user.roles %}
-            <li class="nav-item ms-3">
-              <a href="{{ path('admin_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
-                ⚙️ Espace Admin
-              </a>
-            </li>
+            {% if isAdminRoute %}
+              {# On est déjà dans l’espace admin : on affiche les liens textuels #}
+              <li class="nav-item">
+                <a class="nav-link" href="#users-section">Gestion des utilisateurs</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#exams-section">Gestion des examens</a>
+              </li>
+            {% else %}
+              {# simple bouton "Espace Admin" #}
+              <li class="nav-item">
+                <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary px-3 py-1 d-flex align-items-center">
+                  <i class="bi bi-gear-fill me-2"></i> Espace Admin
+                </a>
+              </li>
+            {% endif %}
           {% endif %}
-
+          
           {# === ENSEIGNANT === #}
           {% if 'ROLE_TEACHER' in app.user.roles %}
-            <li class="nav-item ms-3">
-              <a href="{{ path('teacher_dashboard') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
-                👩‍🏫 Tableau de bord
+            <li class="nav-item">
+              <a href="{{ path('teacher_dashboard') }}" class="btn btn-primary px-3 py-1 d-flex align-items-center">
+                <i class="bi bi-easel-fill me-2"></i> Tableau de bord
               </a>
             </li>
           {% endif %}
 
           {# === ÉTUDIANT === #}
           {% if 'ROLE_STUDENT' in app.user.roles %}
-            <li class="nav-item ms-3">
-              <a href="{{ path('student_exams') }}" class="btn btn-warning btn-sm fw-semibold shadow-sm">
-                🎓 Mes examens
+            <li class="nav-item">
+              <a href="{{ path('student_exams') }}" class="btn btn-primary px-3 py-1 d-flex align-items-center">
+                <i class="bi bi-mortarboard-fill me-2"></i> Mes examens
               </a>
             </li>
           {% endif %}
 
           {# === DÉCONNEXION === #}
-          <li class="nav-item ms-2">
-            <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-sm fw-semibold">
-              🚪 Déconnexion
+          <li class="nav-item">
+            <a class="btn btn-outline-danger px-3 py-1 d-flex align-items-center" href="{{ path('app_logout') }}">
+              <i class="bi bi-box-arrow-right me-2"></i> Déconnexion
             </a>
           </li>
 
         {% else %}
-          {# ========================== #
-             🔓 Utilisateur non connecté
-          # ========================== #}
-          <li class="nav-item ms-3">
-            <a href="{{ path('app_login') }}" class="btn btn-light btn-sm fw-semibold text-primary">
-              🔐 Connexion
+
+          {# NON CONNECTÉ #}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary px-3 py-1 d-flex align-items-center" href="{{ path('app_register') }}">
+              <i class="bi bi-person-plus me-1"></i> Créer un compte
             </a>
           </li>
-          <li class="nav-item ms-2">
-            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-sm fw-semibold">
-              📝 Inscription
-            </a>
-          </li>
+
         {% endif %}
       </ul>
     </div>
